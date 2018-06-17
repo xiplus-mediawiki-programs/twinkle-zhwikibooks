@@ -102,7 +102,7 @@ Twinkle.block.callback = function twinkleblockCallback() {
 			Morebits.quickForm.setElementVisibility($form.find('[name=actiontype][value=protect]').parent(), true);
 		}
 
-		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
+		// clean up preset data (defaults, etc.), done exactly once, must be before Twinkle.block.callback.change_action is called
 		Twinkle.block.transformBlockPresets();
 
 		// init the controls after user and block info have been fetched
@@ -537,6 +537,14 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
  *   To disable, set 'hardblock' and 'disabletalk', respectively
  */
 Twinkle.block.blockPresetsInfo = {
+	'anonblock' : {
+		expiry: '24 hours',
+		forAnonOnly: true,
+		nocreate: true,
+		nonstandard: true,
+		reason: '{{anonblock}}',
+		sig: '~~~~'
+	},
 	'blocked proxy' : {
 		expiry: '2 years',
 		nocreate: true,
@@ -546,12 +554,18 @@ Twinkle.block.blockPresetsInfo = {
 	},
 	'checkuserblock' : {
 		expiry: 'infinity',
+		expiry: '1 week',
+		forAnonOnly: true,
+		nocreate: true,
 		nonstandard: true,
 		reason: '{{checkuserblock}}',
 		sig: '~~~~'
 	},
 	'checkuserblock-account' : {
+		autoblock: true,
 		expiry: 'infinity',
+		forRegisteredOnly: true,
+		nocreate: true,
 		nonstandard: true,
 		reason: '{{checkuserblock-account}}',
 		sig: '~~~~'
@@ -566,6 +580,7 @@ Twinkle.block.blockPresetsInfo = {
 	//	sig: null
 	//},
 	'schoolblock' : {
+		forAnonOnly: true,
 		nocreate: true,
 		nonstandard: true,
 		reason: '{{schoolblock}}',
@@ -580,6 +595,7 @@ Twinkle.block.blockPresetsInfo = {
 	'uw-ablock' : {
 		autoblock: true,
 		expiry: '24 hours',
+		forAnonOnly: true,
 		nocreate: true,
 		reasonParam: true
 	},
@@ -803,9 +819,7 @@ Twinkle.block.callback.toggle_see_alsos = function twinkleblockCallbackToggleSee
 		return el !== this.value;
 	}.bind(this));
 
-	if (this.checked) {
-		Twinkle.block.seeAlsos.push(this.value);
-	}
+	if (this.checked) Twinkle.block.seeAlsos.push(this.value);
 	var seeAlsoMessage = Twinkle.block.seeAlsos.join('、');
 
 	if (!Twinkle.block.seeAlsos.length) {
@@ -1204,5 +1218,6 @@ Twinkle.block.callback.main_flow = function twinkleblockcallbackMain( flowobj ) 
 };
 
 })(jQuery);
+
 
 //</nowiki>
