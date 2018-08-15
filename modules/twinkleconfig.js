@@ -34,51 +34,39 @@ Twinkle.config.commonEnums = wgULS({
 Twinkle.config.commonSets = {
 	csdCriteria: {
 		db: wgULS("自定义理由", "自訂理由"),
-		g1: "G1", g2: "G2", g3: "G3", g5: "G5", g10: "G10", g11: "G11", g12: "G12", g13: "G13", g14: "G14", g15: "G15", g16: "G16",
-		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a6: "A6",
+		g1: "G1", g2: "G2", g3: "G3", g5: "G5", g7: "G7", g9: "G9", g10: "G10", g11: "G11", g13: "G13", g15: "G15",
 		o1: "O1", o3: "O3", o4: "O4",
-		f1: "F1", f3: "F3", f4: "F4", f5: "F5", f6: "F6", f7: "F7",
-		r2: "R2", r3: "R3", r5: "R5"
+		r2: "R2", r3: "R3"
 	},
 	csdCriteriaDisplayOrder: [
 		"db",
-		"g1", "g2", "g3", "g5", "g10", "g11", "g12", "g13", "g14", "g15", "g16",
-		"a1", "a2", "a3", "a5", "a6",
+		"g1", "g2", "g3", "g5", "g7", "g9", "g10", "g11", "g13", "g15",
 		"o1", "o3", "o4",
-		"f1", "f3", "f4", "f5", "f6", "f7",
-		"r2", "r3", "r5"
+		"r2", "r3"
 	],
 	csdCriteriaNotification: {
 		db: wgULS("自定义理由", "自訂理由"),
-		g1: "G1", g2: "G2", g3: "G3", g5: "G5", g10: "G10", g11: "G11", g12: "G12", g13: "G13", g14: "G14", g15: "G15", g16: "G16",
-		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a6: "A6",
+		g1: "G1", g2: "G2", g3: "G3", g5: "G5", g7: "G7", g9: "G9", g10: "G10", g11: "G11", g13: "G13", g15: "G15",
 		o1: "O1", o3: "O3", o4: "O4",
-		f1: "F1", f3: "F3", f4: "F4", f5: "F5", f6: "F6", f7: "F7",
-		r2: "R2", r3: "R3", r5: "R5"
+		r2: "R2", r3: "R3"
 	},
 	csdCriteriaNotificationDisplayOrder: [
 		"db",
-		"g1", "g2", "g3", "g5", "g10", "g11", "g12", "g13", "g14", "g15", "g16",
-		"a1", "a2", "a3", "a5", "a6",
+		"g1", "g2", "g3", "g5", "g7", "g9", "g10", "g11", "g13", "g15",
 		"o1", "o3", "o4",
-		"f1", "f3", "f4", "f5", "f6", "f7",
-		"r2", "r3", "r5"
+		"r2", "r3"
 	],
 	csdAndDICriteria: {
 		db: wgULS("自定义理由", "自訂理由"),
-		g1: "G1", g2: "G2", g3: "G3", g5: "G5", g10: "G10", g11: "G11", g12: "G12", g13: "G13", g14: "G14", g15: "G15", g16: "G16",
-		a1: "A1", a2: "A2", a3: "A3", a5: "A5", a6: "A6",
+		g1: "G1", g2: "G2", g3: "G3", g5: "G5", g7: "G7", g9: "G9", g10: "G10", g11: "G11", g13: "G13", g15: "G15",
 		o1: "O1", o3: "O3", o4: "O4",
-		f1: "F1", f3: "F3", f4: "F4", f5: "F5", f6: "F6", f7: "F7",
-		r2: "R2", r3: "R3", r5: "R5"
+		r2: "R2", r3: "R3"
 	},
 	csdAndDICriteriaDisplayOrder: [
 		"db",
-		"g1", "g2", "g3", "g5", "g10", "g11", "g12", "g13", "g14", "g15", "g16",
-		"a1", "a2", "a3", "a5", "a6",
+		"g1", "g2", "g3", "g5", "g7", "g9", "g10", "g11", "g13", "g15",
 		"o1", "o3", "o4",
-		"f1", "f3", "f4", "f5", "f6", "f7",
-		"r2", "r3", "r5"
+		"r2", "r3"
 	],
 	namespacesNoSpecial: {
 		"0": wgULS("（条目）", "（條目）"),
@@ -159,23 +147,23 @@ Twinkle.config.sections = [
 
 		// TwinkleConfig.protectionSummaryAd (string)
 		// Text to be appended to the edit summary of page protections made using Twinkle
-		{
+		/*{
 			name: "protectionSummaryAd",
 			label: wgULS("保护摘要后缀", "保護摘要後綴"),
 			helptip: wgULS("通常和编辑摘要后缀一样。", "通常和編輯摘要後綴一樣。"),
 			adminOnly: true,
 			type: "string"
-		},
+		},*/
 
 		// TwinkleConfig.blockSummaryAd (string)
 		// Text to be appended to the edit summary of block made using Twinkle
-		{
+		/*{
 			name: "blockSummaryAd",
 			label: wgULS("封禁摘要后缀", "封禁摘要後綴"),
 			helptip: wgULS("通常和编辑摘要后缀一样。", "通常和編輯摘要後綴一樣。"),
 			adminOnly: true,
 			type: "string"
-		},
+		},*/
 
 		// TwinkleConfig.userTalkPageMode may take arguments:
 		// 'window': open a new window, remember the opened window
@@ -197,7 +185,7 @@ Twinkle.config.sections = [
 	]
 },
 
-{
+/*{
 	title: wgULS("图片删除", "圖片刪除"),
 	preferences: [
 		// TwinkleConfig.notifyUserOnDeli (boolean)
@@ -226,7 +214,7 @@ Twinkle.config.sections = [
 			enumValues: Twinkle.config.commonEnums.watchlist
 		}
 	]
-},
+},*/
 
 {
 	title: "回退",  // twinklefluff module
@@ -311,7 +299,7 @@ Twinkle.config.sections = [
 	]
 },
 
-{
+/*{
 	title: wgULS("共享IP标记", "共享IP標記"),
 	inFriendlyConfig: true,
 	preferences: [
@@ -321,7 +309,7 @@ Twinkle.config.sections = [
 			type: "boolean"
 		}
 	]
-},
+},*/
 
 {
 	title: wgULS("快速删除", "快速刪除"),
@@ -353,26 +341,26 @@ Twinkle.config.sections = [
 
 		// TwinkleConfig.notifyUserOnSpeedyDeletionNomination (array)
 		// What types of actions should result that the author of the page being notified of nomination
-		{
+		/*{
 			name: "notifyUserOnSpeedyDeletionNomination",
 			label: wgULS("仅在使用以下理由时通知页面创建者", "僅在使用以下理由時通知頁面建立者"),
 			helptip: wgULS("尽管您在对话框中选择通知，通知仍只会在使用这些理由时发出。", "盡管您在對話框中選擇通知，通知仍只會在使用這些理由時發出。"),
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
-		},
+		},*/
 
 		// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
 		// On what types of speedy deletion notifications shall the user be welcomed
 		// with a "firstarticle" notice if his talk page has not yet been created.
-		{
+		/*{
 			name: "welcomeUserOnSpeedyDeletionNotification",
 			label: wgULS("在使用以下理由时欢迎页面创建者", "在使用以下理由時歡迎頁面建立者"),
 			helptip: wgULS("欢迎模板仅在用户被通知时加入，使用的模板是{{firstarticle}}。", "歡迎模板僅在用戶被通知時加入，使用的模板是{{firstarticle}}。"),
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
-		},
+		},*/
 
 		// TwinkleConfig.promptForSpeedyDeletionSummary (array of strings)
 		{
@@ -466,7 +454,7 @@ Twinkle.config.sections = [
 	]
 },
 
-{
+/*{
 	title: wgULS("标记", "標記"),
 	inFriendlyConfig: true,
 	preferences: [
@@ -510,9 +498,9 @@ Twinkle.config.sections = [
 			customListLabelTitle: wgULS("显示的文字", "顯示的文字")
 		}
 	]
-},
+},*/
 
-{
+/*{
 	title: wgULS("回复", "回覆"),
 	inFriendlyConfig: true,
 	preferences: [
@@ -538,9 +526,9 @@ Twinkle.config.sections = [
 			type: "string"
 		}
 	]
-},
+},*/
 
-{
+/*{
 	title: wgULS("反链", "反連"),
 	preferences: [
 		// TwinkleConfig.unlinkNamespaces (array)
@@ -553,9 +541,9 @@ Twinkle.config.sections = [
 			setValues: Twinkle.config.commonSets.namespacesNoSpecial
 		}
 	]
-},
+},*/
 
-{
+/*{
 	title: wgULS("警告用户", "警告用戶"),
 	preferences: [
 		// TwinkleConfig.defaultWarningGroup (int)
@@ -619,9 +607,9 @@ Twinkle.config.sections = [
 			type: "boolean"
 		}
 	]
-},
+},*/
 
-{
+/*{
 	title: wgULS("封禁", "封禁"),
 	preferences: [
 		{
@@ -633,9 +621,9 @@ Twinkle.config.sections = [
 			customListLabelTitle: wgULS("「由于…您已被封禁」及封禁日志理由", "「由於…您已被封禁」及封禁日誌理由")
 		}
 	]
-},
+},*/
 
-{
+/*{
 	title: wgULS("存废讨论", "存廢討論"),
 	preferences: [
 		// TwinkleConfig.xfdWatchPage (string)
@@ -731,9 +719,9 @@ Twinkle.config.sections = [
 		},
 	]
 
-},
+},*/
 
-{
+/*{
 	title: wgULS("侵犯版权", "侵犯版權"),
 	preferences: [
 		// TwinkleConfig.copyvioWatchPage (string)
@@ -774,7 +762,7 @@ Twinkle.config.sections = [
 		},
 
 	]
-},
+},*/
 
 {
 	title: wgULS("隐藏", "隱藏"),

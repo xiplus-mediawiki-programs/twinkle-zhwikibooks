@@ -136,10 +136,10 @@ Twinkle.defaultConfig.twinkle = {
 	batchProtectChunks: 50,
 	batchundeleteChunks: 50,
 	proddeleteChunks: 50,
-	revisionTags: "Twinkle",
-	configPage: "Wikipedia:Twinkle/参数设置",
+	revisionTags: "",
+	configPage: "User:Xiplus/Twinkle/參數設置",
 	projectNamespaceName: mw.config.get("wgFormattedNamespaces")[4],
-	sandboxPage: "Wikipedia:沙盒",
+	sandboxPage: "Wiktionary:沙盒",
 };
 
 // now some skin dependent config.
@@ -476,33 +476,33 @@ Twinkle.load = function () {
 
 	// Load the modules in the order that the tabs should appear
 	// User/user talk-related
-	Twinkle.arv();
-	Twinkle.warn();
-	if ( Morebits.userIsInGroup('sysop') ) {
-		Twinkle.block();
-	}
+	// Twinkle.arv();
+	// Twinkle.warn();
+	// if ( Morebits.userIsInGroup('sysop') ) {
+	// 	Twinkle.block();
+	// }
 	// Twinkle.shared();
-	Twinkle.talkback();
+	// Twinkle.talkback();
 	// Deletion
 	Twinkle.speedy();
-	Twinkle.copyvio();
-	Twinkle.xfd();
-	Twinkle.image();
+	// Twinkle.copyvio();
+	// Twinkle.xfd();
+	// Twinkle.image();
 	// Maintenance
-	Twinkle.protect();
-	Twinkle.tag();
+	// Twinkle.protect();
+	// Twinkle.tag();
 	// Misc. ones last
 	Twinkle.diff();
-	Twinkle.unlink();
+	// Twinkle.unlink();
 	Twinkle.config.init();
 	Twinkle.fluff.init();
-	if ( Morebits.userIsInGroup('sysop') ) {
-		Twinkle.batchdelete();
-		Twinkle.batchundelete();
-	}
-	if (Twinkle.getPref('XfdClose') !== 'hide') {
-		Twinkle.close();
-	}
+	// if ( Morebits.userIsInGroup('sysop') ) {
+	// 	Twinkle.batchdelete();
+	// 	Twinkle.batchundelete();
+	// }
+	// if (Twinkle.getPref('XfdClose') !== 'hide') {
+	// 	Twinkle.close();
+	// }
 
 	Twinkle.addPortletLink( mw.util.wikiScript("index") + "?title=" + Twinkle.getPref('configPage'), wgULS('设置', '設定'), 'tw-config', wgULS('设置Twinkle参数', '設定Twinkle參數') );
 
