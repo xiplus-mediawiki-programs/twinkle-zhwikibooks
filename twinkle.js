@@ -67,10 +67,10 @@ Twinkle.defaultConfig = {};
  */
 Twinkle.defaultConfig.twinkle = {
 	 // General
-	summaryAd: "",
-	deletionSummaryAd: " ([[WP:TW|TW]])",
-	protectionSummaryAd: " ([[WP:TW|TW]])",
-	blockSummaryAd: " ([[WP:TW|TW]])",
+	summaryAd: " ([[User:Xiplus/Twinkle|TW]])",
+	deletionSummaryAd: " ([[User:Xiplus/Twinkle|TW]])",
+	protectionSummaryAd: " ([[User:Xiplus/Twinkle|TW]])",
+	blockSummaryAd: " ([[User:Xiplus/Twinkle|TW]])",
 	userTalkPageMode: "tab",
 	dialogLargeFont: false,
 	 // Block
