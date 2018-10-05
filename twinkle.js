@@ -121,8 +121,6 @@ Twinkle.defaultConfig.twinkle = {
 	markXfdPagesAsPatrolled: true,
 	FwdCsdToXfd: Morebits.userIsInGroup('sysop'),
 	afdDefaultCategory: "delete",
-	afdFameDefaultReason: "沒有足夠的可靠資料來源能夠讓這個條目符合[[Wikipedia:關注度]]中的標準",
-	afdSubstubDefaultReason: "過期小小作品",
 	XfdClose: ( Morebits.userIsInGroup('sysop') ? 'all' : 'hide' ),
 	 // Copyvio
 	copyvioWatchPage: "default",
@@ -486,7 +484,7 @@ Twinkle.load = function () {
 	// Deletion
 	Twinkle.speedy();
 	// Twinkle.copyvio();
-	// Twinkle.xfd();
+	Twinkle.xfd();
 	// Twinkle.image();
 	// Maintenance
 	// Twinkle.protect();

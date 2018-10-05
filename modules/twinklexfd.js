@@ -47,8 +47,8 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	var Window = new Morebits.simpleWindow( 600, 350 );
 	Window.setTitle( wgULS("提交存废讨论", "提交存廢討論") );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( wgULS("关于存废讨论", "關於存廢討論"), "WP:XFD" );
-	Window.addFooterLink( wgULS("Twinkle帮助", "Twinkle說明"), "WP:TW/DOC#xfd" );
+	Window.addFooterLink( wgULS("关于存废讨论", "關於存廢討論"), "Wiktionary:RFD" );
+	Window.addFooterLink( wgULS("Twinkle帮助", "Twinkle說明"), "w:Help:Twinkle#提刪" );
 
 	var form = new Morebits.quickForm( Twinkle.xfd.callback.evaluate );
 	var categories = form.append( {
@@ -63,12 +63,12 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 			selected: mw.config.get('wgNamespaceNumber') === 0,  // Main namespace
 			value: 'afd'
 		} );
-	categories.append( {
-			type: 'option',
-			label: wgULS('文件存废讨论', '檔案存廢討論'),
-			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
-			value: 'ffd'
-		} );
+	// categories.append( {
+	// 		type: 'option',
+	// 		label: wgULS('文件存废讨论', '檔案存廢討論'),
+	// 		selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
+	// 		value: 'ffd'
+	// 	} );
 	form.append( {
 			type: 'checkbox',
 			list: [
@@ -168,7 +168,7 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		}
 		afd_category.append( { type:'option', label:wgULS('删除', '刪除'), value:'delete', selected:( afd_cat === 'delete' ) } );
 		afd_category.append( { type:'option', label:wgULS('合并', '合併'), value:'merge', selected:( afd_cat === 'merge' ) } );
-		afd_category.append( { type:'option', label:wgULS('移动到维基词典', '移動到維基詞典'), value:'vmd', selected:( afd_cat === 'vmd' ) } );
+		afd_category.append( { type:'option', label:wgULS('移动到维基百科', '移動到維基百科'), value:'vmw', selected:( afd_cat === 'vmw' ) } );
 		afd_category.append( { type:'option', label:wgULS('移动到维基文库', '移動到維基文庫'), value:'vms', selected:( afd_cat === 'vms' ) } );
 		afd_category.append( { type:'option', label:wgULS('移动到维基教科书', '移動到維基教科書'), value:'vmb', selected:( afd_cat === 'vmb' ) } );
 		afd_category.append( { type:'option', label:wgULS('移动到维基语录', '移動到維基語錄'), value:'vmq', selected:( afd_cat === 'vmq' ) } );
@@ -177,9 +177,6 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		if ( Twinkle.getPref('FwdCsdToXfd') ) {
 			afd_category.append( { type:'option', label:wgULS('转交自快速删除候选', '轉交自快速刪除候選'), value:'fwdcsd', selected:( afd_cat === 'fwdcsd' ) } );
 		}
-		afd_category.append( { type:'option', label:wgULS('批量关注度提删', '批量關注度提刪'), value:'fame', selected:( afd_cat === 'fame' ) } );
-		afd_category.append( { type:'option', label:wgULS('批量小小作品提删', '批量小小作品提刪'), value:'substub', selected:( afd_cat === 'substub' ) } );
-		afd_category.append( { type:'option', label:wgULS('批量其他提删', '批量其他提刪'), value:'batch', selected:( afd_cat === 'batch' ) } );
 
 
 		work_area.append( {
@@ -320,7 +317,7 @@ Twinkle.xfd.callbacks = {
 			var tag = '{{vfd|' + Morebits.string.formatReasonText(params.reason);
 
 			switch ( params.xfdcat ) {
-				case 'vmd':
+				case 'vmw':
 					tag += '|wikt';
 					break;
 				case 'vms':
@@ -394,7 +391,7 @@ Twinkle.xfd.callbacks = {
 			var to = '';
 
 			switch ( params.xfdcat ) {
-				case 'vmd':
+				case 'vmw':
 				case 'vms':
 				case 'vmb':
 				case 'vmq':
@@ -448,7 +445,7 @@ Twinkle.xfd.callbacks = {
 					}
 					break;
 				default:
-					pageobj.setAppendText("\n{{subst:DRItem|Type=" + type + "|DRarticles=" + Morebits.pageNameNorm + "|Reason=" + Morebits.string.formatReasonText(params.reason) + (params.fwdcsdreason.trim() !== "" ? "<br>\n轉交理由："+params.fwdcsdreason : "") + "|To=" + to + "}}~~~~");
+					pageobj.setAppendText("\n{{subst:DRItem|Type=" + type + "|DRarticles=" + Morebits.pageNameNorm + "|Reason=" + Morebits.string.formatReasonText(params.reason) + (params.fwdcsdreason.trim() !== "" ? "<br>\n轉交理由："+params.fwdcsdreason : "") + "|To=" + to + "}}--~~~~");
 					break;
 			}
 			
@@ -645,7 +642,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	}
 
 	var query, wikipedia_page, wikipedia_api, logpage, params;
-	var dateString;
 	var date = new Date();
 	function twodigits(num) {
 		return num < 10 ? '0' + num : num;
@@ -653,8 +649,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	switch( type ) {
 
 	case 'afd': // AFD
-		dateString = date.getUTCFullYear() + '/' + twodigits(date.getUTCMonth() + 1) + '/' + twodigits(date.getUTCDate());
-		logpage = 'Wikipedia:頁面存廢討論/記錄/' + dateString;
+		logpage = 'Wiktionary:删除请求';
 		params = { usertalk: usertalk, xfdcat: xfdcat, mergeinto: mergeinto, noinclude: noinclude, reason: reason, fwdcsdreason: fwdcsdreason, logpage: logpage };
 
 		Morebits.wiki.addCheckpoint();
@@ -672,8 +667,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		break;
 
 	case 'ffd': // FFD
-		dateString = date.getUTCFullYear() + '/' + twodigits(date.getUTCMonth() + 1) + '/' + twodigits(date.getUTCDate());
-		logpage = 'Wikipedia:檔案存廢討論/記錄/' + dateString;
+		logpage = 'Wiktionary:删除请求';
 		params = { usertalk: usertalk, reason: reason, logpage: logpage };
 
 		Morebits.wiki.addCheckpoint();
@@ -696,172 +690,6 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	}
 };
 
-
-/**
- * 愚人节提删
- */
-
-Twinkle.xfd.aprilfool = function twinklexfdCallback() {
-	var Window = new Morebits.simpleWindow( 600, 350 );
-	Window.setTitle( "APRIL FOOL" );
-	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( wgULS("关于愚人节", "關於愚人節"), "Wikipedia:愚人節玩笑規範" );
-	Window.addFooterLink( wgULS("Twinkle帮助", "Twinkle說明"), "WP:TW/DOC#xfd" );
-
-	var form = new Morebits.quickForm( Twinkle.xfd.aprilfool.evaluate );
-	var categories = form.append( {
-			type: 'select',
-			name: 'category',
-			label: wgULS('提交类型：', '提交類別：'),
-			event: Twinkle.xfd.callback.change_category
-		} );
-	categories.append( {
-			type: 'option',
-			label: wgULS('页面存废讨论', '頁面存廢討論'),
-			selected: mw.config.get('wgNamespaceNumber') === 0,  // Main namespace
-			value: 'afd'
-		} );
-	categories.append( {
-			type: 'option',
-			label: wgULS('文件存废讨论', '檔案存廢討論'),
-			selected: mw.config.get('wgNamespaceNumber') === 6,  // File namespace
-			value: 'ffd'
-		} );
-	form.append( {
-			type: 'checkbox',
-			list: [
-				{
-					label: wgULS('通知还是不通知，这是一个问题', '通知還是不通知，這是一個問題'),
-					value: 'notify',
-					name: 'notify',
-					tooltip: wgULS("无论选还是不选都不通知！", "無論選還是不選都不通知！"),
-					checked: true
-				}
-			]
-		}
-	);
-	form.append( {
-			type: 'field',
-			label:'工作区',
-			name: 'work_area'
-		} );
-	form.append( { type:'submit' } );
-
-	var result = form.render();
-	Window.setContent( result );
-	Window.display();
-
-	// We must init the controls
-	var evt = document.createEvent( "Event" );
-	evt.initEvent( 'change', true, true );
-	result.category.dispatchEvent( evt );
-};
-
-Twinkle.xfd.aprilfool.evaluate = function(e) {
-	var type = e.target.category.value;
-	var reason = e.target.xfdreason.value;
-	var xfdcat, mergeinto, noinclude;
-	if( type === 'afd' ) {
-		noinclude = e.target.noinclude.checked;
-		xfdcat = e.target.xfdcat.value;
-		mergeinto = e.target.mergeinto.value;
-	}
-
-	Morebits.simpleWindow.setButtonsEnabled( false );
-	Morebits.status.init( e.target );
-
-	Twinkle.xfd.currentRationale = reason;
-	Morebits.status.onError(Twinkle.xfd.printRationale);
-
-	var wikipedia_page, logpage, params;
-	var date = new Date();
-
-	logpage = 'Wikipedia:頁面存廢和諧討論/記錄/' + date.getUTCFullYear() + '/04/01';
-	params = { xfdcat: xfdcat, mergeinto: mergeinto, noinclude: noinclude, reason: reason, logpage: logpage };
-
-	Morebits.wiki.addCheckpoint();
-	// Updating data for the action completed event
-	Morebits.wiki.actionCompleted.redirect = logpage;
-	Morebits.wiki.actionCompleted.notice = wgULS("提名完成，重定向到讨论页", "提名完成，重定向到討論頁");
-
-	// Tagging file
-	wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), wgULS("假装添加存废讨论模板到页面", "假裝加入存廢討論模板到頁面"));
-	wikipedia_page.setFollowRedirect(false);
-	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(Twinkle.xfd.aprilfool.tryTagging);
-
-	Morebits.wiki.removeCheckpoint();
-};
-
-Twinkle.xfd.aprilfool.todaysList = function(pageobj) {
-	var text = pageobj.getPageText();
-	var params = pageobj.getCallbackParameters();
-	var type = '';
-	var to = '';
-
-	switch ( params.xfdcat ) {
-		case 'vmd':
-		case 'vms':
-		case 'vmb':
-		case 'vmq':
-		case 'vmvoy':
-		case 'vmv':
-			type = 'vm';
-			to = params.xfdcat;
-			break;
-		case 'fwdcsd':
-		case 'merge':
-			to = params.mergeinto;
-			/* Fall through */
-		default:
-			type = params.xfdcat;
-			break;
-	}
-
-	pageobj.setAppendText("\n{{subst:DRItem|Type=" + type + "|DRarticles=" + Morebits.pageNameNorm + "|Reason=" + Morebits.string.formatReasonText(params.reason) + "|To=" + to + "}}~~~~");
-	pageobj.setEditSummary("添加[[" + Morebits.pageNameNorm + "]]" + Twinkle.getPref('summaryAd'));
-	switch (Twinkle.getPref('xfdWatchDiscussion')) {
-		case 'yes':
-			pageobj.setWatchlist(true);
-			break;
-		case 'no':
-			pageobj.setWatchlistFromPreferences(false);
-			break;
-		default:
-			pageobj.setWatchlistFromPreferences(true);
-			break;
-	}
-	pageobj.setCreateOption('recreate');
-	pageobj.append();
-	Twinkle.xfd.currentRationale = null;  // any errors from now on do not need to print the rationale, as it is safely saved on-wiki
-};
-
-Twinkle.xfd.aprilfool.tryTagging = function (pageobj) {
-	var statelem = pageobj.getStatusElement();
-	var params = pageobj.getCallbackParameters();
-	if (!pageobj.exists()) {
-		statelem.error(wgULS("页面不存在，可能已被删除", "頁面不存在，可能已被刪除"));
-		return;
-	}
-
-	var text = pageobj.getPageText();
-
-	var xfd = /(?:\{\{([rsaiftcmv]fd|md1|proposed deletion)[^{}]*?\}\})/i.exec( text );
-	if ( xfd && !confirm( wgULS("删除相关模板{{" + xfd[1] + "}}已被置于页面中，您是否仍想继续提报？", "刪除相關模板{{" + xfd[1] + "}}已被置於頁面中，您是否仍想繼續提報？") ) ) {
-		statelem.error( wgULS('页面已被提交至存废讨论。', '頁面已被提交至存廢討論。') );
-		return;
-	}
-
-	var copyvio = /(?:\{\{\s*(copyvio)[^{}]*?\}\})/i.exec( text );
-	if ( copyvio ) {
-		statelem.error( wgULS('页面中已有版权验证模板。', '頁面中已有版權驗證模板。') );
-	}
-
-	var wikipedia_page = new Morebits.wiki.page(params.logpage, wgULS("添加讨论到当日列表", "加入討論到當日清單"));
-	wikipedia_page.setFollowRedirect(true);
-	wikipedia_page.setCallbackParameters(params);
-	wikipedia_page.load(Twinkle.xfd.aprilfool.todaysList);
-};
 
 })(jQuery);
 
