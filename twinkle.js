@@ -494,10 +494,10 @@ Twinkle.load = function () {
 	// Twinkle.unlink();
 	Twinkle.config.init();
 	Twinkle.fluff.init();
-	// if ( Morebits.userIsInGroup('sysop') ) {
-	// 	Twinkle.batchdelete();
-	// 	Twinkle.batchundelete();
-	// }
+	if ( Morebits.userIsInGroup('sysop') ) {
+		Twinkle.batchdelete();
+		// Twinkle.batchundelete();
+	}
 	// if (Twinkle.getPref('XfdClose') !== 'hide') {
 	// 	Twinkle.close();
 	// }

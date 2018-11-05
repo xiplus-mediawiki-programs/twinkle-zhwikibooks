@@ -30,7 +30,7 @@ Twinkle.batchdelete.callback = function twinklebatchdeleteCallback() {
 	var Window = new Morebits.simpleWindow( 600, 400 );
 	Window.setTitle( wgULS("批量删除", "批量刪除") );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( wgULS("Twinkle帮助", "Twinkle說明"), "WP:TW/DOC#batchdelete" );
+	Window.addFooterLink( wgULS("Twinkle帮助", "Twinkle說明"), "w:Help:Twinkle#管理员专用模块" );
 
 	var form = new Morebits.quickForm( Twinkle.batchdelete.callback.evaluate );
 	form.append( {
@@ -336,7 +336,7 @@ Twinkle.batchdelete.callbacks = {
 		redirectDeleter.setPageList(pages);
 		redirectDeleter.run(function(pageName) {
 			var wikipedia_page = new Morebits.wiki.page(pageName, wgULS("删除", "刪除") + pageName);
-			wikipedia_page.setEditSummary('[[WP:CSD#G15|G15]]: 孤立页面: 重定向到已删除页面“' + apiobj.params.page + '”' + Twinkle.getPref('deletionSummaryAd'));
+			wikipedia_page.setEditSummary('[[Wiktionary:CSD#G15|G15]]: 孤立页面: 重定向到已删除页面“' + apiobj.params.page + '”' + Twinkle.getPref('deletionSummaryAd'));
 			wikipedia_page.deletePage(redirectDeleter.workerSuccess, redirectDeleter.workerFailure);
 		});
 	},
@@ -350,7 +350,7 @@ Twinkle.batchdelete.callbacks = {
 		}
 
 		var page = new Morebits.wiki.page(apiobj.params.talkPage, wgULS("删除条目" + apiobj.params.page + "的讨论页", "刪除條目" + apiobj.params.page + "的討論頁"));
-		page.setEditSummary('[[WP:CSD#G15|G15]]: 孤立页面: 已删除页面“' + apiobj.params.page + '”的讨论页' + Twinkle.getPref('deletionSummaryAd'));
+		page.setEditSummary('[[Wiktionary:CSD#G15|G15]]: 孤立页面: 已删除页面“' + apiobj.params.page + '”的讨论页' + Twinkle.getPref('deletionSummaryAd'));
 		page.deletePage();
 	},
 	unlinkBacklinksMain: function( apiobj ) {
