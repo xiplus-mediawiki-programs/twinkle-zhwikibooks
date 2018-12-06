@@ -15,7 +15,7 @@
  */
 
 Twinkle.close = function twinkleclose() {
-	if ( Twinkle.getPref('XfdClose') === 'hide' || !(/^Wikipedia:(頁面|檔案)存廢討論\/記錄\/\d+\/\d+\/\d+$/.test(mw.config.get('wgPageName'))) ) {
+	if ( Twinkle.getPref('XfdClose') === 'hide' || mw.config.get('wgPageName') !== 'Wiktionary:删除请求' ) {
 		return;
 	}
 
@@ -30,8 +30,8 @@ Twinkle.close = function twinkleclose() {
 		current.setAttribute('data-section', index + 1);
 	});
 
-	var selector = ':has(.mw-headline a:only-of-type):not(:has(+ div.NavFrame))';
-	var titles = $('#bodyContent').find('h2' + selector + ':not(:has(+ p + h3)), h3' + selector); // really needs to work on
+	var selector = ':has(.mw-headline a:only-of-type):not(:has(+ div.xfd-closed))';
+	var titles = $('#bodyContent').find('h3' + selector + ':not(:has(+ p + h4)), h4' + selector); // really needs to work on
 
 	var delNode = document.createElement('strong');
 	var delLink = document.createElement('a');
@@ -102,11 +102,6 @@ Twinkle.close.codes = wgULS({
 		'sk': {
 			label: '快速保留',
 			action: 'keep'
-		},
-		'tk': {
-			label: '暂时保留',
-			action: 'keep',
-			adminonly: true
 		},
 		'rr': {
 			label: '请求理由消失',
@@ -181,8 +176,8 @@ Twinkle.close.codes = wgULS({
 			action: 'noop',
 			adminonly: true
 		},
-		'twt': {
-			label: '转移至维基词典',
+		'tww': {
+			label: '转移至维基百科',
 			action: 'noop',
 			adminonly: true
 		},
@@ -198,18 +193,6 @@ Twinkle.close.codes = wgULS({
 		}
 	},
 	'其他处理方法': {
-		'c': {
-			label: '转交侵权',
-			action: 'noop'
-		},
-		//'m2pfd': {
-		//	label: '转送页面存废讨论',
-		//	action: 'noop'
-		//},
-		'm2ifd': {
-			label: '转送文件存废讨论',
-			action: 'noop'
-		},
 		'r': {
 			label: '重定向',
 			action: 'keep',
@@ -268,11 +251,6 @@ Twinkle.close.codes = wgULS({
 		'sk': {
 			label: '快速保留',
 			action: 'keep'
-		},
-		'tk': {
-			label: '暫時保留',
-			action: 'keep',
-			adminonly: true
 		},
 		'rr': {
 			label: '請求理由消失',
@@ -347,8 +325,8 @@ Twinkle.close.codes = wgULS({
 			action: 'noop',
 			adminonly: true
 		},
-		'twt': {
-			label: '轉移至維基詞典',
+		'tww': {
+			label: '轉移至維基百科',
 			action: 'noop',
 			adminonly: true
 		},
@@ -364,18 +342,6 @@ Twinkle.close.codes = wgULS({
 		}
 	},
 	'其他處理方法': {
-		'c': {
-			label: '轉交侵權',
-			action: 'noop'
-		},
-		//'m2pfd': {
-		//	label: '轉送頁面存廢討論',
-		//	action: 'noop'
-		//},
-		'm2ifd': {
-			label: '轉送檔案存廢討論',
-			action: 'noop'
-		},
 		'r': {
 			label: '重定向',
 			action: 'keep',
@@ -406,7 +372,7 @@ Twinkle.close.codes = wgULS({
 
 Twinkle.close.callback = function twinklecloseCallback(title, section, noop) {
 	var Window = new Morebits.simpleWindow( 400, 150 );
-	Window.setTitle( wgULS("关闭存废讨论", "關閉存廢討論") + " \u00B7 " + title );
+	Window.setTitle( wgULS("关闭删除请求", "關閉刪除請求") + " \u00B7 " + title );
 	Window.setScriptName( "Twinkle" );
 	Window.addFooterLink( wgULS("Twinkle帮助", "Twinkle說明"), "WP:TW/DOC#close" );
 
@@ -539,7 +505,7 @@ Twinkle.close.callback.evaluate = function twinklecloseCallbackEvaluate(e) {
 				Twinkle.close.callbacks.del(params);
 				break;
 			case 'keep':
-				var wikipedia_page = new Morebits.wiki.page( params.title, wgULS('移除存废讨论模板', '移除存廢討論模板') );
+				var wikipedia_page = new Morebits.wiki.page( params.title, wgULS('移除删除请求模板', '移除刪除請求模板') );
 				wikipedia_page.setCallbackParameters( params );
 				wikipedia_page.load( Twinkle.close.callbacks.keep );
 				break;
@@ -554,7 +520,7 @@ Twinkle.close.callbacks = {
 	del: function (params) {
 		Morebits.wiki.addCheckpoint();
 
-		var page = new Morebits.wiki.page( params.title, "删除页面" );
+		var page = new Morebits.wiki.page( params.title, wgULS('删除页面', '刪除頁面') );
 
 		if (params.code === 'sd') {
 			Twinkle.speedy.callbacks.parseWikitext(params.title, '{{delete|' + params.sdreason + '}}', function(reason) {
@@ -571,7 +537,7 @@ Twinkle.close.callbacks = {
 				}
 			});
 		} else {
-			page.setEditSummary( wgULS('存废讨论通过：[[', '存廢討論通過：[[') + mw.config.get('wgPageName') + ']]' + Twinkle.getPref('deletionSummaryAd') );
+			page.setEditSummary( '[[Special:PermaLink/' + mw.config.get('wgCurRevisionId') + '|' + wgULS('删除请求通过', '刪除請求通過') + ']]' + Twinkle.getPref('deletionSummaryAd') );
 			page.deletePage(function() {
 				page.getStatusElement().info("完成");
 				Twinkle.close.callbacks.talkend( params );
@@ -591,29 +557,25 @@ Twinkle.close.callbacks = {
 		var text = pageobj.getPageText();
 		var params = pageobj.getCallbackParameters();
 
-		var pagetitle = mw.Title.newFromText(params.title);
-		if (pagetitle.getNamespaceId() % 2 === 0) {
-			var talkpagetitle = new mw.Title(pagetitle.getMainText(), pagetitle.getNamespaceId() + 1);
-			var talkpage = new Morebits.wiki.page(talkpagetitle.toString(), wgULS('标记讨论页', '標記討論頁'));
-			var vfdkept = '{{vfd-kept|' + mw.config.get('wgPageName').split('/').slice(2).join('/') + '|' + params.messageData.label + '}}\n';
-			talkpage.setPrependText(vfdkept);
-			talkpage.setEditSummary('[[' + mw.config.get('wgPageName') + ']]：' + params.messageData.label + Twinkle.getPref('summaryAd'));
-			talkpage.setCreateOption('recreate');
-			talkpage.prepend();
-		}
+		// var pagetitle = mw.Title.newFromText(params.title);
+		// if (pagetitle.getNamespaceId() % 2 === 0) {
+		// 	var talkpagetitle = new mw.Title(pagetitle.getMainText(), pagetitle.getNamespaceId() + 1);
+		// 	var talkpage = new Morebits.wiki.page(talkpagetitle.toString(), wgULS('标记讨论页', '標記討論頁'));
+		// 	var vfdkept = '{{vfd-kept|' + mw.config.get('wgPageName').split('/').slice(2).join('/') + '|' + params.messageData.label + '}}\n';
+		// 	talkpage.setPrependText(vfdkept);
+		// 	talkpage.setEditSummary('[[' + mw.config.get('wgPageName') + ']]：' + params.messageData.label + Twinkle.getPref('summaryAd'));
+		// 	talkpage.setCreateOption('recreate');
+		// 	talkpage.prepend();
+		// }
 
-		var newtext = text.replace(/<noinclude>\s*\{\{([rsaiftcmv]fd)\|[^{}]*?\}\}\s*<\/noinclude>\s*/gi, '');
-		newtext = newtext.replace(/\{\{([rsaiftcmv]fd)\|[^{}]*?\}\}\s*/gi, '');
-		if (params.code !== 'tk') {
-			newtext = newtext.replace(/\{\{(notability|fame|mair|知名度|重要性|显著性|顯著性|知名度不足|人物重要性|重要性不足|notable|关注度|关注度不足|關注度|關注度不足|重要|重要度)\|[^{}]*?\}\}\n*/gi, '');
-			newtext = newtext.replace(/\{\{(substub|小小作品|cod|小小條目|小小条目)\|[^{}]*?\}\}\n*/gi, '');
-		}
+		var newtext = text.replace(/<noinclude>\s*\{\{([rsaiftcmv]fd)(\|[^{}]*?)?\}\}\s*<\/noinclude>\s*/gi, '');
+		newtext = newtext.replace(/\{\{([rsaiftcmv]fd)(\|[^{}]*?)?\}\}\s*/gi, '');
 		if (newtext === text) {
-			statelem.warn(wgULS("未找到存废讨论模板，可能已被移除", "未找到存廢討論模板，可能已被移除"));
+			statelem.warn(wgULS("未找到删除请求模板，可能已被移除", "未找到刪除請求模板，可能已被移除"));
 			Twinkle.close.callbacks.talkend( params );
 			return;
 		}
-		var editsummary = wgULS('存废讨论关闭：[[', '存廢討論關閉：[[') + mw.config.get('wgPageName') + ']]';
+		var editsummary = '[[Special:PermaLink/' + mw.config.get('wgCurRevisionId') + '|' + wgULS('删除请求关闭', '刪除請求關閉') + ']]';
 
 		pageobj.setPageText(newtext);
 		pageobj.setEditSummary(editsummary + Twinkle.getPref('summaryAd'));
