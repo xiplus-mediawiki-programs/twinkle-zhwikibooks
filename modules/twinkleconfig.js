@@ -216,7 +216,7 @@ Twinkle.config.sections = [
 	]
 },*/
 
-{
+/*{
 	title: "回退",  // twinklefluff module
 	preferences: [
 		// TwinkleConfig.openTalkPage (array)
@@ -297,7 +297,7 @@ Twinkle.config.sections = [
 			customListLabelTitle: wgULS("显示的文字", "顯示的文字")
 		},
 	]
-},
+},*/
 
 /*{
 	title: wgULS("共享IP标记", "共享IP標記"),
@@ -311,7 +311,7 @@ Twinkle.config.sections = [
 	]
 },*/
 
-{
+/*{
 	title: wgULS("快速删除", "快速刪除"),
 	preferences: [
 		{
@@ -341,26 +341,26 @@ Twinkle.config.sections = [
 
 		// TwinkleConfig.notifyUserOnSpeedyDeletionNomination (array)
 		// What types of actions should result that the author of the page being notified of nomination
-		/*{
+		{
 			name: "notifyUserOnSpeedyDeletionNomination",
 			label: wgULS("仅在使用以下理由时通知页面创建者", "僅在使用以下理由時通知頁面建立者"),
 			helptip: wgULS("尽管您在对话框中选择通知，通知仍只会在使用这些理由时发出。", "盡管您在對話框中選擇通知，通知仍只會在使用這些理由時發出。"),
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
-		},*/
+		},
 
 		// TwinkleConfig.welcomeUserOnSpeedyDeletionNotification (array of strings)
 		// On what types of speedy deletion notifications shall the user be welcomed
 		// with a "firstarticle" notice if his talk page has not yet been created.
-		/*{
+		{
 			name: "welcomeUserOnSpeedyDeletionNotification",
 			label: wgULS("在使用以下理由时欢迎页面创建者", "在使用以下理由時歡迎頁面建立者"),
 			helptip: wgULS("欢迎模板仅在用户被通知时加入，使用的模板是{{firstarticle}}。", "歡迎模板僅在用戶被通知時加入，使用的模板是{{firstarticle}}。"),
 			type: "set",
 			setValues: Twinkle.config.commonSets.csdCriteriaNotification,
 			setDisplayOrder: Twinkle.config.commonSets.csdCriteriaNotificationDisplayOrder
-		},*/
+		},
 
 		// TwinkleConfig.promptForSpeedyDeletionSummary (array of strings)
 		{
@@ -452,7 +452,7 @@ Twinkle.config.sections = [
 			type: "boolean"
 		}
 	]
-},
+},*/
 
 /*{
 	title: wgULS("标记", "標記"),
@@ -660,12 +660,12 @@ Twinkle.config.sections = [
 
 		// TwinkleConfig.markXfdPagesAsPatrolled (boolean)
 		// If, when applying xfd template to page, to mark the page as patrolled (if the page was reached from NewPages)
-		{
+		/*{
 			name: "markXfdPagesAsPatrolled",
 			label: wgULS("标记时标记页面为已巡查（如可能）", "標記時標記頁面為已巡查（如可能）"),
 			helptip: wgULS("基于技术原因，页面仅会在由Special:NewPages到达时被标记为已巡查。", "基於技術原因，頁面僅會在由Special:NewPages到達時被標記為已巡查。"),
 			type: "boolean"
-		},
+		},*/
 
 		{
 			name: "FwdCsdToXfd",
@@ -688,7 +688,7 @@ Twinkle.config.sections = [
 			})
 		},
 
-		{
+		/*{
 			name: "XfdClose",
 			label: wgULS("在存废讨论显示关闭讨论按钮", "在存廢討論顯示關閉討論按鈕"),
 			helptip: wgULS("请确保您充分了解[[Wikipedia:关闭删除讨论指南]]才开启此功能。", "請確保您充分了解[[Wikipedia:關閉刪除討論指南]]才開啟此功能。"),
@@ -702,7 +702,7 @@ Twinkle.config.sections = [
 				"nonadminonly": "只包含非管理員可使用選項",
 				"all": "顯示所有選項"
 			})
-		},
+		},*/
 	]
 
 },

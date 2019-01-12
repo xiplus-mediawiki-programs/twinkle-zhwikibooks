@@ -47,7 +47,7 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	var Window = new Morebits.simpleWindow( 600, 350 );
 	Window.setTitle( wgULS("提交存废讨论", "提交存廢討論") );
 	Window.setScriptName( "Twinkle" );
-	Window.addFooterLink( wgULS("关于存废讨论", "關於存廢討論"), "Wiktionary:RFD" );
+	Window.addFooterLink( wgULS("关于存废讨论", "關於存廢討論"), "Wikibooks:RFD" );
 	Window.addFooterLink( wgULS("Twinkle帮助", "Twinkle說明"), "w:Help:Twinkle#提刪" );
 
 	var form = new Morebits.quickForm( Twinkle.xfd.callback.evaluate );
@@ -77,7 +77,8 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 					value: 'notify',
 					name: 'notify',
 					tooltip: wgULS("在页面创建者对话页上放置一通知模板。", "在頁面建立者對話頁上放置一通知模板。"),
-					checked: true
+					checked: false,
+					disabled: true
 				}
 			]
 		}
@@ -228,8 +229,8 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		form.notify.checked = false;
 		form.notify.disabled = true;
 	} else {
-		form.notify.checked = Twinkle.xfd.previousNotify;
-		form.notify.disabled = false;
+		form.notify.checked = false; // Twinkle.xfd.previousNotify;
+		form.notify.disabled = true;
 	}
 };
 
@@ -649,7 +650,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 	switch( type ) {
 
 	case 'afd': // AFD
-		logpage = 'Wiktionary:删除请求';
+		logpage = 'Wikibooks:删除请求';
 		params = { usertalk: usertalk, xfdcat: xfdcat, mergeinto: mergeinto, noinclude: noinclude, reason: reason, fwdcsdreason: fwdcsdreason, logpage: logpage };
 
 		Morebits.wiki.addCheckpoint();
@@ -667,7 +668,7 @@ Twinkle.xfd.callback.evaluate = function(e) {
 		break;
 
 	case 'ffd': // FFD
-		logpage = 'Wiktionary:删除请求';
+		logpage = 'Wikibooks:删除请求';
 		params = { usertalk: usertalk, reason: reason, logpage: logpage };
 
 		Morebits.wiki.addCheckpoint();

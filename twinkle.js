@@ -482,7 +482,7 @@ Twinkle.load = function () {
 	// Twinkle.shared();
 	// Twinkle.talkback();
 	// Deletion
-	Twinkle.speedy();
+	// Twinkle.speedy();
 	// Twinkle.copyvio();
 	Twinkle.xfd();
 	// Twinkle.image();
@@ -493,14 +493,14 @@ Twinkle.load = function () {
 	Twinkle.diff();
 	// Twinkle.unlink();
 	Twinkle.config.init();
-	Twinkle.fluff.init();
-	if ( Morebits.userIsInGroup('sysop') ) {
-		Twinkle.batchdelete();
-		// Twinkle.batchundelete();
-	}
-	if (Twinkle.getPref('XfdClose') !== 'hide') {
-		Twinkle.close();
-	}
+	// Twinkle.fluff.init();
+	// if ( Morebits.userIsInGroup('sysop') ) {
+	// 	Twinkle.batchdelete();
+	// 	Twinkle.batchundelete();
+	// }
+	// if (Twinkle.getPref('XfdClose') !== 'hide') {
+	// 	Twinkle.close();
+	// }
 
 	Twinkle.addPortletLink( mw.util.wikiScript("index") + "?title=" + Twinkle.getPref('configPage'), wgULS('设置', '設定'), 'tw-config', wgULS('设置Twinkle参数', '設定Twinkle參數') );
 
