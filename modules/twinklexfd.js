@@ -459,7 +459,8 @@ Twinkle.xfd.callbacks = {
 		},
 		tryTagging: function (pageobj) {
 			var statelem = pageobj.getStatusElement();
-			if (!pageobj.exists()) {
+			// defaults to /doc for lua modules, which may not exist
+			if (!pageobj.exists() && mw.config.get('wgPageContentModel') !== 'Scribunto') {
 				statelem.error(wgULS('页面不存在，可能已被删除', '頁面不存在，可能已被刪除'));
 				return;
 			}
