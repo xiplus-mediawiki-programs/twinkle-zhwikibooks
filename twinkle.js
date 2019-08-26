@@ -493,7 +493,7 @@ Twinkle.load = function () {
 	Twinkle.diff();
 	// Twinkle.unlink();
 	Twinkle.config.init();
-	// Twinkle.fluff.init();
+	Twinkle.fluff.init();
 	// if ( Morebits.userIsInGroup('sysop') ) {
 	// 	Twinkle.batchdelete();
 	// 	Twinkle.batchundelete();
