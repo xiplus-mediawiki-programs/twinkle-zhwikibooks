@@ -2040,7 +2040,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			tags: Twinkle.getPref('revisionTags'),
 			title: ctx.pageName,
 			summary: ctx.editSummary,
-			token: canUseMwUserToken ? mw.user.tokens.get('editToken') : ctx.editToken,
+			token: canUseMwUserToken ? mw.user.tokens.get('csrfToken') : ctx.editToken,
 			watchlist: ctx.watchlistOption
 		};
 
@@ -2370,7 +2370,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			}
 		}
 
-		return !!mw.user.tokens.get('editToken');
+		return !!mw.user.tokens.get('csrfToken');
 	};
 
 	// callback from loadSuccess() for append() and prepend() threads
@@ -2675,7 +2675,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		var pageTitle, token;
 
 		if (fnCanUseMwUserToken('delete')) {
-			token = mw.user.tokens.get('editToken');
+			token = mw.user.tokens.get('csrfToken');
 			pageTitle = ctx.pageName;
 		} else {
 			var xml = ctx.deleteApi.getXML();
@@ -3001,115 +3001,115 @@ Morebits.wiki.flow = function(pageName, currentAction) {
     /**
      * Public interface accessors
      */
-    this.getPageName = function() {
-        return ctx.pageName;
-    };
+	this.getPageName = function() {
+		return ctx.pageName;
+	};
 
-    this.getHeader = function() {
-        return ctx.header;
-    };
+	this.getHeader = function() {
+		return ctx.header;
+	};
 
-    this.setHeader = function(header) {
-        ctx.header = header;
-    };
+	this.setHeader = function(header) {
+		ctx.header = header;
+	};
 
-    this.getTopic = function() {
-        return ctx.topic;
-    };
+	this.getTopic = function() {
+		return ctx.topic;
+	};
 
-    this.setTopic = function(topic) {
-        ctx.topic = topic;
-    };
+	this.setTopic = function(topic) {
+		ctx.topic = topic;
+	};
 
-    this.getContent = function() {
-        return ctx.content;
-    };
+	this.getContent = function() {
+		return ctx.content;
+	};
 
-    this.setContent = function(content) {
-        ctx.content = content;
-    };
+	this.setContent = function(content) {
+		ctx.content = content;
+	};
 
-    this.setCallbackParameters = function(callbackParameters) {
-        ctx.callbackParameters = callbackParameters;
-    };
+	this.setCallbackParameters = function(callbackParameters) {
+		ctx.callbackParameters = callbackParameters;
+	};
 
-    this.getCallbackParameters = function() {
-        return ctx.callbackParameters;
-    };
+	this.getCallbackParameters = function() {
+		return ctx.callbackParameters;
+	};
 
-    this.getStatusElement = function() {
-        return ctx.statusElement;
-    };
-
-
-    // Save updated .pageText to Wikipedia
-    // Only valid after successful .load()
-    this.newTopic = function(onSuccess, onFailure) {
-        ctx.onNewTopicSuccess = onSuccess;
-        ctx.onNewTopicFailure = onFailure || emptyFunction;
-
-        var query = {
-            action: 'flow',
-            page: ctx.pageName,
-            token: mw.user.tokens.get('editToken'),
-            submodule: 'new-topic',
-            nttopic: ctx.topic,
-            ntcontent: ctx.content,
-            ntformat: 'wikitext',
-        };
-
-        ctx.newTopicApi = new Morebits.wiki.api( "留言…", query, fnNewTopicSuccess, ctx.statusElement, fnNewTopicError);
-        ctx.newTopicApi.setParent(this);
-        ctx.newTopicApi.post();
-    };
+	this.getStatusElement = function() {
+		return ctx.statusElement;
+	};
 
 
-    this.viewHeader = function (onSuccess, onFailure) {
-        ctx.onViewHeaderSuccess = onSuccess;
-        ctx.onViewHeaderFailure = onFailure || emptyFunction;
-        //header: null,
-        //headerLastRevision: null,
-        //headerLoaded
+	// Save updated .pageText to Wikipedia
+	// Only valid after successful .load()
+	this.newTopic = function(onSuccess, onFailure) {
+		ctx.onNewTopicSuccess = onSuccess;
+		ctx.onNewTopicFailure = onFailure || emptyFunction;
 
-        if (!onSuccess) {
-        	ctx.statusElement.error("内部错误：未给viewHeader()提供onSuccess回调函数！");
+		var query = {
+			action: 'flow',
+			page: ctx.pageName,
+			token: mw.user.tokens.get('csrfToken'),
+			submodule: 'new-topic',
+			nttopic: ctx.topic,
+			ntcontent: ctx.content,
+			ntformat: 'wikitext'
+		};
+
+		ctx.newTopicApi = new Morebits.wiki.api('留言…', query, fnNewTopicSuccess, ctx.statusElement, fnNewTopicError);
+		ctx.newTopicApi.setParent(this);
+		ctx.newTopicApi.post();
+	};
+
+
+	this.viewHeader = function (onSuccess, onFailure) {
+		ctx.onViewHeaderSuccess = onSuccess;
+		ctx.onViewHeaderFailure = onFailure || emptyFunction;
+		// header: null,
+		// headerLastRevision: null,
+		// headerLoaded
+
+		if (!onSuccess) {
+			ctx.statusElement.error('内部错误：未给viewHeader()提供onSuccess回调函数！');
 			ctx.onViewHeaderFailure(this);
 			return;
-        }
+		}
 
-        var query = {
-        	action: 'flow',
-        	submodule: 'view-header',
-        	page: ctx.pageName,
-        	vhformat: 'wikitext',
-        };
+		var query = {
+			action: 'flow',
+			submodule: 'view-header',
+			page: ctx.pageName,
+			vhformat: 'wikitext'
+		};
 
-        ctx.viewHeaderApi = new Morebits.wiki.api(wgULS('抓取Flow描述…', '擷取Flow描述…'), query, fnViewHeaderSuccess, ctx.statusElement, ctx.onViewHeaderFailure);
-        ctx.viewHeaderApi.setParent(this);
-        ctx.viewHeaderApi.post();
-    };
+		ctx.viewHeaderApi = new Morebits.wiki.api(wgULS('抓取Flow描述…', '擷取Flow描述…'), query, fnViewHeaderSuccess, ctx.statusElement, ctx.onViewHeaderFailure);
+		ctx.viewHeaderApi.setParent(this);
+		ctx.viewHeaderApi.post();
+	};
 
-    this.editHeader = function (onSuccess, onFailure) {
-        ctx.onEditHeaderSuccess = onSuccess;
-        ctx.onEditHeaderFailure = onFailure || emptyFunction;
+	this.editHeader = function (onSuccess, onFailure) {
+		ctx.onEditHeaderSuccess = onSuccess;
+		ctx.onEditHeaderFailure = onFailure || emptyFunction;
 
-        var query = {
-            action: 'flow',
-            page: ctx.pageName,
-            token: mw.user.tokens.get('editToken'),
-            submodule: 'edit-header',
-            ehprev_revision: ctx.headerLastRevision,
-            ehcontent: ctx.header,
-            ehformat: 'wikitext',
-        };
+		var query = {
+			action: 'flow',
+			page: ctx.pageName,
+			token: mw.user.tokens.get('csrfToken'),
+			submodule: 'edit-header',
+			ehprev_revision: ctx.headerLastRevision,
+			ehcontent: ctx.header,
+			ehformat: 'wikitext'
+		};
 
-        ctx.editHeaderApi = new Morebits.wiki.api( wgULS("编辑Flow讨论页描述…", "編輯Flow討論頁描述…"), query, fnEditHeaderSuccess, ctx.statusElement, fnEditHeaderError);
-        ctx.editHeaderApi.setParent(this);
-        ctx.editHeaderApi.post();
-    };
+		ctx.editHeaderApi = new Morebits.wiki.api(wgULS('编辑Flow讨论页描述…', '編輯Flow討論頁描述…'), query, fnEditHeaderSuccess, ctx.statusElement, fnEditHeaderError);
+		ctx.editHeaderApi.setParent(this);
+		ctx.editHeaderApi.post();
+	};
 
 
-    /* Private member functions
+	/* Private member functions
      *
      * These are not exposed outside
      */
