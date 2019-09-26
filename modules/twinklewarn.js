@@ -1812,9 +1812,9 @@ Twinkle.warn.callback.change_category = function twinklewarnCallbackChangeCatego
 	sub_group.main_group = value;
 	var old_subvalue = sub_group.value;
 	var old_subvalue_re;
-	if( old_subvalue ) {
-		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '' );
-		old_subvalue_re = new RegExp( mw.RegExp.escape( old_subvalue ) + "(\\d*(?:im)?)$" );
+	if (old_subvalue) {
+		old_subvalue = old_subvalue.replace(/\d*(im)?$/, '');
+		old_subvalue_re = new RegExp(mw.util.escapeRegExp(old_subvalue) + '(\\d*(?:im)?)$');
 	}
 
 	while( sub_group.hasChildNodes() ){
