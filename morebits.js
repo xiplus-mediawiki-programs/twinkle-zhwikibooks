@@ -1688,11 +1688,11 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
  *
  * exists(): returns true if the page existed on the wiki when it was last loaded
  *
- * lookupCreator(onSuccess): Retrieves the username of the user who created the page
+ * lookupCreation(onSuccess): Retrieves the username of the user who created the page
  *    onSuccess - callback function which is called when the username is found
  *                within the callback, the username can be retrieved using the getCreator() function
  *
- * getCreator(): returns the user who created the page following lookupCreator()
+ * getCreator(): returns the user who created the page following lookupCreation()
  *
  * getCurrentID(): returns a string containing the current revision ID of the page
  *
@@ -1778,6 +1778,10 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		protectMove: null,
 		protectCreate: null,
 		protectCascade: false,
+
+		// - creation lookup
+		lookupNonRedirectCreator: false,
+
 		// - stabilize (FlaggedRevs)
 		flaggedRevs: null,
 		// internal status
@@ -1796,7 +1800,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		onLoadFailure: null,
 		onSaveSuccess: null,
 		onSaveFailure: null,
-		onLookupCreatorSuccess: null,
+		onlookupCreationSuccess: null,
 		onMoveSuccess: null,
 		onMoveFailure: null,
 		onDeleteSuccess: null,
@@ -1809,7 +1813,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		loadQuery: null,
 		loadApi: null,
 		saveApi: null,
-		lookupCreatorApi: null,
+		lookupCreationApi: null,
 		moveApi: null,
 		moveProcessApi: null,
 		deleteApi: null,
@@ -1892,6 +1896,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return ctx.creator;
 	};
 
+	/**
+	 * @returns {string} the ISOString timestamp of page creation following lookupCreation()
+	 */
+	this.getCreationTimestamp = function() {
+		return ctx.timestamp;
+	};
+
 	this.setOldID = function(oldID) {
 		ctx.revertOldID = oldID;
 	};
@@ -1904,6 +1915,22 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		return ctx.revertUser;
 	};
 
+	// lookup-creation setter function
+	/**
+	 * @param {boolean} flag - if set true, the author and timestamp of the first non-redirect
+	 * version of the page is retrieved.
+	 *
+	 * Warning:
+	 * 1. If there are no revisions among the first 50 that are non-redirects, or if there are
+	 *    less 50 revisions and all are redirects, the original creation is retrived.
+	 * 2. Revisions that the user is not privileged to access (revdeled/suppressed) will be treated
+	 *    as non-redirects.
+	 */
+	this.setLookupNonRedirectCreator = function(flag) {
+		ctx.lookupNonRedirectCreator = flag;
+	};
+
+	// Move-related setter functions
 	this.setMoveDestination = function(destination) {
 		ctx.moveDestination = destination;
 	};
@@ -2136,19 +2163,28 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
-	this.lookupCreator = function(onSuccess) {
+	/**
+	 * Retrieves the username of the user who created the page as well as
+	 * the timestamp of creation
+	 * @param {Function} onSuccess - callback function (required) which is
+	 * called when the username and timestamp are found within the callback.
+	 * The username can be retrieved using the getCreator() function;
+	 * the timestamp can be retrieved using the getCreationTimestamp() function
+	 */
+	this.lookupCreation = function(onSuccess) {
 		if (!onSuccess) {
-			ctx.statusElement.error('内部错误：未给lookupCreator()提供onSuccess回调函数！');
+			ctx.statusElement.error('内部错误：未给lookupCreation()提供onSuccess回调函数！');
 			return;
 		}
-		ctx.onLookupCreatorSuccess = onSuccess;
+		ctx.onLookupCreationSuccess = onSuccess;
 
 		var query = {
 			'action': 'query',
 			'prop': 'revisions',
 			'titles': ctx.pageName,
 			'rvlimit': 1,
-			'rvprop': 'user',
+			'rvprop': 'user|timestamp|content',
+			'rvsection': 0,
 			'rvdir': 'newer'
 		};
 
@@ -2156,9 +2192,16 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			query.redirects = '';  // follow all redirects
 		}
 
-		ctx.lookupCreatorApi = new Morebits.wiki.api(wgULS('抓取页面创建者信息', '擷取頁面建立者資訊'), query, fnLookupCreatorSuccess, ctx.statusElement);
-		ctx.lookupCreatorApi.setParent(this);
-		ctx.lookupCreatorApi.post();
+		ctx.lookupCreationApi = new Morebits.wiki.api(wgULS('抓取页面创建者信息', '擷取頁面建立者資訊'), query, fnlookupCreationSuccess, ctx.statusElement);
+		ctx.lookupCreationApi.setParent(this);
+		ctx.lookupCreationApi.post();
+	};
+	/**
+	 * @deprecated since May/June 2019, renamed to lookupCreation
+	 */
+	this.lookupCreator = function(onSuccess) {
+		console.warn("NOTE: lookupCreator() from Twinkle's Morebits has been deprecated since May/June 2019, please use lookupCreation() instead"); // eslint-disable-line no-console
+		return this.lookupCreation(onSuccess);
 	};
 
 	this.patrol = function() {
@@ -2611,19 +2654,67 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
-	var fnLookupCreatorSuccess = function() {
-		var xml = ctx.lookupCreatorApi.getXML();
+	var fnlookupCreationSuccess = function() {
+		var xml = ctx.lookupCreationApi.getXML();
 
 		if (!fnCheckPageName(xml)) {
 			return; // abort
 		}
 
-		ctx.creator = $(xml).find('rev').attr('user');
+		if (!ctx.lookupNonRedirectCreator || !/^\s*#(redirect|重定向|重新導向)/i.test($(xml).find('rev').text())) {
+
+			ctx.creator = $(xml).find('rev').attr('user');
+			if (!ctx.creator) {
+				ctx.statusElement.error(wgULS('无法获取页面创建者的名字', '無法取得頁面建立者的名字'));
+				return;
+			}
+			ctx.timestamp = $(xml).find('rev').attr('timestamp');
+			if (!ctx.timestamp) {
+				ctx.statusElement.error(wgULS('无法获取页面创建时间', '無法取得頁面建立者的名字'));
+				return;
+			}
+			ctx.onLookupCreationSuccess(this);
+
+		} else {
+			ctx.lookupCreationApi.query.rvlimit = 50; // modify previous query to fetch more revisions
+			ctx.lookupCreationApi.query.titles = ctx.pageName; // update pageName if redirect resolution took place in earlier query
+
+			ctx.lookupCreationApi = new Morebits.wiki.api(wgULS('获取页面创建信息', '取得頁面建立資訊'), ctx.lookupCreationApi.query, fnLookupNonRedirectCreator, ctx.statusElement);
+			ctx.lookupCreationApi.setParent(this);
+			ctx.lookupCreationApi.post();
+		}
+
+	};
+
+	var fnLookupNonRedirectCreator = function() {
+		var xml = ctx.lookupCreationApi.getXML();
+
+		$(xml).find('rev').each(function(_, rev) {
+			if (!/^\s*#(redirect|重定向|重新導向)/i.test(rev.textContent)) { // inaccessible revisions also check out
+				ctx.creator = rev.getAttribute('user');
+				ctx.timestamp = rev.getAttribute('timestamp');
+				return false; // break
+			}
+		});
+
 		if (!ctx.creator) {
-			ctx.statusElement.error(wgULS('不能获取页面创建者的名字', '無法取得頁面建立者的名字'));
+			// fallback to give first revision author if no non-redirect version in the first 50
+			ctx.creator = $(xml).find('rev')[0].getAttribute('user');
+			if (!ctx.creator) {
+				ctx.statusElement.error(wgULS('不能获取页面创建者的名字', '無法取得頁面建立者的名字'));
+			}
 			return;
 		}
-		ctx.onLookupCreatorSuccess(this);
+		if (!ctx.timestamp) {
+			ctx.timestamp = $(xml).find('rev')[0].getAttribute('timestamp');
+			if (!ctx.timestamp) {
+				ctx.statusElement.error(wgULS('无法获取页面创建时间', '無法取得頁面建立者的名字'));
+			}
+			return;
+		}
+
+		ctx.onLookupCreationSuccess(this);
+
 	};
 
 	var fnProcessMove = function() {

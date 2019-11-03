@@ -496,6 +496,7 @@ Twinkle.xfd.callbacks = {
 			// Notification to first contributor
 			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			wikipedia_page.setCallbackParameters(pageobj.getCallbackParameters());
+			wikipedia_page.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 			wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.afd.main);
 		}
 	},
@@ -612,6 +613,7 @@ Twinkle.xfd.callbacks = {
 			// Contributor specific edits
 			var wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'));
 			wikipedia_page.setCallbackParameters(pageobj.getCallbackParameters());
+			wikipedia_page.setLookupNonRedirectCreator(true); // Look for author of first non-redirect revision
 			wikipedia_page.lookupCreator(Twinkle.xfd.callbacks.ffd.main);
 		}
 	}
