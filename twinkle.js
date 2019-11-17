@@ -445,11 +445,11 @@ $.ajax({
 // For example, mw.loader.load(scriptpathbefore + "User:UncleDouggie/morebits-test.js" + scriptpathafter);
 
 Twinkle.load = function () {
-	// Don't activate on special pages other than "Contributions" so that they load faster, especially the watchlist.
-	var isSpecialPage = ( mw.config.get('wgNamespaceNumber') === -1 &&
-		mw.config.get('wgCanonicalSpecialPageName') !== "Contributions" &&
-		mw.config.get('wgCanonicalSpecialPageName') !== "DeletedContributions" &&
-		mw.config.get('wgCanonicalSpecialPageName') !== "Prefixindex" ),
+	// Don't activate on special pages other than those on the whitelist so that
+	// they load faster, especially the watchlist.
+	var specialPageWhitelist = [ 'Block', 'Contributions', 'DeletedContributions', 'Prefixindex', 'AbuseLog' ];
+	var isSpecialPage = mw.config.get('wgNamespaceNumber') === -1 &&
+		specialPageWhitelist.indexOf(mw.config.get('wgCanonicalSpecialPageName')) === -1 ;
 
 		// Also, Twinkle is incompatible with Internet Explorer versions 8 or lower, so don't load there either.
 		isOldIE = ( window.attachEvent && !window.addEventListener );

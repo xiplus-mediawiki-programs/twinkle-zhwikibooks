@@ -11,12 +11,12 @@ var api = new mw.Api(), relevantUserName;
  *** twinkleblock.js: Block module
  ****************************************
  * Mode of invocation:     Tab ("Block")
- * Active on:              any page with relevant user name (userspace, contribs, etc.)
+ * Active on:              Any page with relevant user name (userspace, contribs, etc.)
  * Config directives in:   [soon to be TwinkleConfig]
  */
 
 Twinkle.block = function twinkleblock() {
-	// should show on Contributions pages, anywhere there's a relevant user
+	// should show on Contributions or Block pages, anywhere there's a relevant user
 	if ( Morebits.userIsInGroup('sysop') && Morebits.wiki.flow.relevantUserName() ) {
 		Twinkle.addPortletLink(Twinkle.block.callback, '封禁', 'tw-block', wgULS('封禁相关用户', '封禁相關用戶') );
 	}
@@ -428,7 +428,7 @@ Twinkle.block.callback.change_action = function twinkleblockCallbackChangeAction
 					{ label: '{{Sockpuppeteer|blocked}}：傀儡主帳號', value: 'spm' }
 				]
 			} );
-		
+
 		field_tag_options.append( {
 			type: 'input',
 			name: 'username',
