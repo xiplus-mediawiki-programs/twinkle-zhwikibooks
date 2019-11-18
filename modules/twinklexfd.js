@@ -100,8 +100,6 @@ Twinkle.xfd.callback = function twinklexfdCallback() {
 	result.category.dispatchEvent( evt );
 };
 
-Twinkle.xfd.previousNotify = true;
-
 Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory(e) {
 	var value = e.target.value;
 	var form = e.target.form;
@@ -223,15 +221,9 @@ Twinkle.xfd.callback.change_category = function twinklexfdCallbackChangeCategory
 		break;
 	}
 
-	// No creator notification for CFDS
-	if (value === "cfds") {
-		Twinkle.xfd.previousNotify = form.notify.checked;
-		form.notify.checked = false;
-		form.notify.disabled = true;
-	} else {
-		form.notify.checked = false; // Twinkle.xfd.previousNotify;
-		form.notify.disabled = true;
-	}
+	// Return to checked state when switching
+	form.notify.checked = true;
+	form.notify.disabled = false;
 };
 
 Twinkle.xfd.callback.change_afd_category = function twinklexfdCallbackChangeAfdCategory(e) {
@@ -449,7 +441,7 @@ Twinkle.xfd.callbacks = {
 					pageobj.setAppendText("\n{{subst:DRItem|Type=" + type + "|DRarticles=" + Morebits.pageNameNorm + "|Reason=" + Morebits.string.formatReasonText(params.reason) + (params.fwdcsdreason.trim() !== "" ? "<br>\n轉交理由："+params.fwdcsdreason : "") + "|To=" + to + "}}--~~~~");
 					break;
 			}
-			
+
 			pageobj.setEditSummary(wgULS("添加[[", "加入[[") + Morebits.pageNameNorm + "]]" + Twinkle.getPref('summaryAd'));
 			switch (Twinkle.getPref('xfdWatchDiscussion')) {
 				case 'yes':
