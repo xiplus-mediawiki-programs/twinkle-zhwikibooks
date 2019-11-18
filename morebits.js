@@ -1,5 +1,4 @@
 // <nowiki>
-// vim: set noet sts=0 sw=8:
 /**
  * morebits.js
  * ===========
@@ -32,6 +31,29 @@
 
 (function (window, document, $, undefined) { // Wrap entire file with anonymous function
 
+// MediaWiki:Gadget-site-lib.js
+window.wgUXS = function (wg, hans, hant, cn, tw, hk, sg, zh, mo, my) {
+	var ret = {
+		'zh': zh || hans || hant || cn || tw || hk || sg || mo || my,
+		'zh-hans': hans || cn || sg || my,
+		'zh-hant': hant || tw || hk || mo,
+		'zh-cn': cn || hans || sg || my,
+		'zh-sg': sg || hans || cn || my,
+		'zh-tw': tw || hant || hk || mo,
+		'zh-hk': hk || hant || mo || tw,
+		'zh-mo': mo || hant || hk || tw
+	};
+	return ret[wg] || zh || hans || hant || cn || tw || hk || sg || mo || my; // 保證每一語言有值
+};
+
+window.wgULS = function (hans, hant, cn, tw, hk, sg, zh, mo, my) {
+	return wgUXS(mw.config.get('wgUserLanguage'), hans, hant, cn, tw, hk, sg, zh, mo, my); // eslint-disable-line no-undef
+};
+
+window.wgUVS = function (hans, hant, cn, tw, hk, sg, zh, mo, my) {
+	return wgUXS(mw.config.get('wgUserVariant'), hans, hant, cn, tw, hk, sg, zh, mo, my); // eslint-disable-line no-undef
+};
+
 var Morebits = {};
 window.Morebits = Morebits;  // allow global access
 
@@ -43,21 +65,17 @@ window.Morebits = Morebits;  // allow global access
  */
 
 Morebits.userIsInGroup = function (group) {
-	return $.inArray(group, mw.config.get('wgUserGroups')) !== -1;
+	return mw.config.get('wgUserGroups').indexOf(group) !== -1;
 };
-
 
 
 /**
- * **************** Morebits.isIPAddress() ****************
- * Helper function: Returns true if given string contains a valid IPv4 or
- * IPv6 address
+ * **************** Morebits.isIPRange() ****************
  */
 
-Morebits.isIPAddress = function (address) {
-	return mw.util.isIPv4Address(address) || mw.util.isIPv6Address(address);
+Morebits.isIPRange = function (address) {
+	return mw.util.isIPAddress(address, true) && !mw.util.isIPAddress(address);
 };
-
 
 
 /**
@@ -72,7 +90,7 @@ Morebits.sanitizeIPv6 = function (address) {
 	if (address === '') {
 		return null;
 	}
-	if (mw.util.isIPv4Address(address) || !mw.util.isIPv6Address(address)) {
+	if (!mw.util.isIPv6Address(address)) {
 		return address; // nothing else to do for IPv4 addresses or invalid ones
 	}
 	// Remove any whitespaces, convert to upper case
@@ -431,6 +449,9 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 			subnode = node.appendChild(document.createElement('input'));
 			if (data.value) {
 				subnode.setAttribute('value', data.value);
+			}
+			if (data.placeholder) {
+				subnode.setAttribute('placeholder', data.placeholder);
 			}
 			subnode.setAttribute('name', data.name);
 			subnode.setAttribute('type', 'text');
@@ -877,6 +898,53 @@ HTMLFormElement.prototype.getChecked = function(name, type) {
 	return return_array;
 };
 
+/**
+ * getUnchecked:
+ *   Does the same as getChecked above, but with unchecked elements.
+ */
+
+HTMLFormElement.prototype.getUnchecked = function(name, type) {
+	var elements = this.elements[name];
+	if (!elements) {
+		// if the element doesn't exists, return null.
+		return null;
+	}
+	var return_array = [];
+	var i;
+	if (elements instanceof HTMLSelectElement) {
+		var options = elements.options;
+		for (i = 0; i < options.length; ++i) {
+			if (!options[i].selected) {
+				if (options[i].values) {
+					return_array.push(options[i].values);
+				} else {
+					return_array.push(options[i].value);
+				}
+
+			}
+		}
+	} else if (elements instanceof HTMLInputElement) {
+		if (type && elements.type !== type) {
+			return [];
+		} else if (!elements.checked) {
+			return [ elements.value ];
+		}
+	} else {
+		for (i = 0; i < elements.length; ++i) {
+			if (!elements[i].checked) {
+				if (type && elements[i].type !== type) {
+					continue;
+				}
+				if (elements[i].values) {
+					return_array.push(elements[i].values);
+				} else {
+					return_array.push(elements[i].value);
+				}
+			}
+		}
+	}
+	return return_array;
+};
 
 
 /**
@@ -1006,8 +1074,8 @@ if (!String.prototype.trim) {
 	};
 }
 
-// Helper functions to change case of a string
 Morebits.string = {
+	// Helper functions to change case of a string
 	toUpperCaseFirstChar: function(str) {
 		str = str.toString();
 		return str.substr(0, 1).toUpperCase() + str.substr(1);
@@ -1146,6 +1214,15 @@ Morebits.array = {
  */
 Morebits.pageNameNorm = mw.config.get('wgPageName').replace(/_/g, ' ');
 
+
+/**
+ * *************** Morebits.pageNameRegex *****************
+ * For a page name 'Foo bar', returns the string '[Ff]oo bar'
+ * @param {string} pageName - page name without namespace
+ */
+Morebits.pageNameRegex = function(pageName) {
+	return '[' + pageName[0].toUpperCase() + pageName[0].toLowerCase() + ']' + pageName.slice(1);
+};
 
 
 /**
@@ -1577,9 +1654,8 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
  *    onSuccess - callback function which is called when the load has succeeded
  *    onFailure - callback function which is called when the load fails (optional)
  *
- * save(onSuccess, onFailure): Saves the text for the page. Must be preceded by calling load().
- *    onSuccess - callback function which is called when the save has succeeded (optional)
- *    onFailure - callback function which is called when the save fails (optional)
+ * save([onSuccess], [onFailure]):  Saves the text set via setPageText() for the page.
+ * Must be preceded by calling load().
  *    Warning: Calling save() can result in additional calls to the previous load() callbacks to
  *             recover from edit conflicts!
  *             In this case, callers must make the same edit to the new pageText and reinvoke save().
@@ -1702,6 +1778,10 @@ Morebits.wiki.api.setApiUserAgent = function(ua) {
  *
  * deletePage(onSuccess, onFailure): Deletes a page (for admins only)
  *
+ * undeletePage(onSuccess, [onFailure]): Undeletes a page (for admins only)
+ *
+ * protect(onSuccess, [onFailure]): Protects a page
+ *
  */
 
 /**
@@ -1752,6 +1832,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		tags: '',
 		callbackParameters: null,
 		statusElement: new Morebits.status(currentAction),
+
 		// - edit
 		pageText: null,
 		editMode: 'all',  // save() replaces entire contents of the page by default
@@ -1766,13 +1847,16 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		followRedirect: false,
 		watchlistOption: 'nochange',
 		creator: null,
+
 		// - revert
 		revertOldID: null,
+
 		// - move
 		moveDestination: null,
 		moveTalkPage: false,
 		moveSubpages: false,
 		moveSuppressRedirect: false,
+
 		// - protect
 		protectEdit: null,
 		protectMove: null,
@@ -1784,6 +1868,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 		// - stabilize (FlaggedRevs)
 		flaggedRevs: null,
+
 		// internal status
 		pageLoaded: false,
 		editToken: null,
@@ -1795,6 +1880,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		suppressProtectWarning: false,
 		conflictRetries: 0,
 		retries: 0,
+
 		// callbacks
 		onLoadSuccess: null,
 		onLoadFailure: null,
@@ -1805,10 +1891,13 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		onMoveFailure: null,
 		onDeleteSuccess: null,
 		onDeleteFailure: null,
+		onUndeleteSuccess: null,
+		onUndeleteFailure: null,
 		onProtectSuccess: null,
 		onProtectFailure: null,
 		onStabilizeSuccess: null,
 		onStabilizeFailure: null,
+
 		// internal objects
 		loadQuery: null,
 		loadApi: null,
@@ -1818,6 +1907,8 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		moveProcessApi: null,
 		deleteApi: null,
 		deleteProcessApi: null,
+		undeleteApi: null,
+		undeleteProcessApi: null,
 		protectApi: null,
 		protectProcessApi: null,
 		stabilizeApi: null,
@@ -2313,6 +2404,49 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 	};
 
+	/**
+	 * Undeletes a page (for admins only)
+	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} [onFailure] - callback function to run on failure (optional)
+	 */
+	this.undeletePage = function(onSuccess, onFailure) {
+		ctx.onUndeleteSuccess = onSuccess;
+		ctx.onUndeleteFailure = onFailure || emptyFunction;
+
+		// if a non-admin tries to do this, don't bother
+		if (!Morebits.userIsInGroup('sysop')) {
+			ctx.statusElement.error(wgULS('不能取消删除页面：只有管理员可进行该操作', '不能取消刪除頁面：只有管理員可進行該操作'));
+			ctx.onUndeleteFailure(this);
+			return;
+		}
+		if (!ctx.editSummary) {
+			ctx.statusElement.error('内部错误：取消删除前未提供理由（使用setEditSummary函数）！', '內部錯誤：取消刪除前未提供理由（使用setEditSummary函式）！');
+			ctx.onUndeleteFailure(this);
+			return;
+		}
+
+		if (fnCanUseMwUserToken('undelete')) {
+			fnProcessUndelete.call(this, this);
+		} else {
+			var query = {
+				action: 'query',
+				prop: 'info',
+				inprop: 'protection',
+				intoken: 'undelete',
+				titles: ctx.pageName
+			};
+
+			ctx.undeleteApi = new Morebits.wiki.api(wgULS('抓取取消删除令牌…', '擷取取消刪除權杖…'), query, fnProcessUndelete, ctx.statusElement, ctx.onUndeleteFailure);
+			ctx.undeleteApi.setParent(this);
+			ctx.undeleteApi.post();
+		}
+	};
+
+	/**
+	 * Protects a page (for admins only)
+	 * @param {Function} onSuccess - callback function to run on success
+	 * @param {Function} [onFailure] - callback function to run on failure (optional)
+	 */
 	this.protect = function(onSuccess, onFailure) {
 		ctx.onProtectSuccess = onSuccess;
 		ctx.onProtectFailure = onFailure || emptyFunction;
@@ -2522,7 +2656,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 
 			// only notify user for redirects, not normalization
 			if ($(xml).find('redirects').length > 0) {
-				Morebits.status.info('Info', wgULS('从 ', '從 ') + ctx.pageName + ' 重定向到 ' + resolvedName);
+				Morebits.status.info(wgULS('信息', '資訊'), wgULS('从 ', '從 ') + ctx.pageName + ' 重定向到 ' + resolvedName);
 			}
 			ctx.pageName = resolvedName;  // always update in case of normalization
 		} else {
@@ -2535,6 +2669,24 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			return false; // abort
 		}
 		return true; // all OK
+	};
+
+	// helper function to get a new token on encountering token errors
+	// in save, deletePage, and undeletePage
+	// Being a synchronous ajax call, this blocks the event loop,
+	// and hence should be used sparingly.
+	var fnGetToken = function() {
+		var token;
+		var tokenApi = new Morebits.wiki.api(wgULS('获取令牌', '取得權杖'), {
+			action: 'query',
+			meta: 'tokens'
+		}, function(apiobj) {
+			token = $(apiobj.responseXML).find('tokens').attr('csrftoken');
+		}, null, function() {
+			this.getStatusElement().error(wgULS('获取令牌失败', '取得權杖失敗'));
+		});
+		tokenApi.post({async: false});
+		return token;
 	};
 
 	// callback from saveApi.post()
@@ -2584,8 +2736,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 				titles: ctx.pageName  // redirects are already resolved
 			};
 
-			var purgeApi = new Morebits.wiki.api(wgULS('检测到编辑冲突，更新服务器缓存', '檢測到編輯衝突，更新伺服器快取'),
-				purgeQuery, null, ctx.statusElement);
+			var purgeApi = new Morebits.wiki.api(wgULS('检测到编辑冲突，更新服务器缓存', '檢測到編輯衝突，更新伺服器快取'), purgeQuery, null, ctx.statusElement);
 			purgeApi.post({ async: false });  // just wait for it, result is for debugging
 
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
@@ -2598,16 +2749,12 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			}
 
 		// check for loss of edit token
-		// it's impractical to request a new token here, so invoke edit conflict logic when this happens
-		} else if (errorCode === 'notoken' && ctx.conflictRetries++ < ctx.maxConflictRetries) {
+		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
 
 			ctx.statusElement.info(wgULS('编辑令牌不可用，重试', '編輯權杖不可用，重試'));
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
-			if (fnCanUseMwUserToken('edit')) {
-				this.load(fnAutoSave, ctx.onSaveFailure); // try the append or prepend again
-			} else {
-				ctx.loadApi.post(); // reload the page and reapply the edit
-			}
+			ctx.saveApi.query.token = fnGetToken.call(this);
+			ctx.saveApi.post();
 
 		// check for network or server error
 		} else if (errorCode === 'undefined' && ctx.retries++ < ctx.maxRetries) {
@@ -2835,15 +2982,11 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.statusElement.info(wgULS('数据库查询错误，重试', '資料庫查詢錯誤，重試'));
 			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
 			ctx.deleteProcessApi.post(); // give it another go!
-
-		} else if (errorCode === 'badtoken') {
-			// this is pathetic, but given the current state of Morebits.wiki.page it would
-			// be a dog's breakfast to try and fix this
-			ctx.statusElement.error(wgULS('无效令牌，请刷新页面并重试。', '無效權杖，請重新整理頁面並重試。'));
-			if (ctx.onDeleteFailure) {
-				ctx.onDeleteFailure.call(this, this, ctx.deleteProcessApi);
-			}
-
+		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
+			ctx.statusElement.info(wgULS('无效令牌，重试', '無效權杖，重試'));
+			--Morebits.wiki.numberOfActionsLeft;
+			ctx.deleteProcessApi.query.token = fnGetToken.call(this);
+			ctx.deleteProcessApi.post();
 		} else if (errorCode === 'missingtitle') {
 
 			ctx.statusElement.error(wgULS('不能删除页面，因其已不存在', '不能刪除頁面，因其已不存在'));
@@ -2857,6 +3000,89 @@ Morebits.wiki.page = function(pageName, currentAction) {
 			ctx.statusElement.error(wgULS('不能删除页面：', '不能刪除頁面：') + ctx.deleteProcessApi.getErrorText());
 			if (ctx.onDeleteFailure) {
 				ctx.onDeleteFailure.call(this, ctx.deleteProcessApi);  // invoke callback
+			}
+		}
+	};
+
+	var fnProcessUndelete = function() {
+		var pageTitle, token;
+
+		// The whole handling of tokens in Morebits is outdated (#615)
+		// but has generally worked since intoken has been deprecated
+		// but remains.  intoken does not, however, take undelete, so
+		// fnCanUseMwUserToken('undelete') is no good.  Everything
+		// except watching and patrolling should eventually use csrf,
+		// but until then (#615) the stupid hack below should work for
+		// undeletion.
+		if (fnCanUseMwUserToken('undelete')) {
+			token = mw.user.tokens.get('csrfToken');
+			pageTitle = ctx.pageName;
+		} else {
+			var xml = ctx.undeleteApi.getXML();
+
+			if ($(xml).find('page').attr('missing') !== '') {
+				ctx.statusElement.error(wgULS('不能取消删除页面，因为它已存在', '不能取消刪除頁面，因為它已存在'));
+				ctx.onUndeleteFailure(this);
+				return;
+			}
+
+			// extract protection info
+			var editprot = $(xml).find('pr[type="create"]');
+			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
+				!confirm(wgULS('您即将取消删除全保护页面“' + ctx.pageName + '”', '您即將取消刪除全保護頁面「' + ctx.pageName + '」') +
+				(editprot.attr('expiry') === 'infinity' ? '（永久）' : '（到期 ' + editprot.attr('expiry') + '）') +
+				wgULS('。\n\n点击确定以取消删除，或点击取消以取消。', '。\n\n點選確定以取消刪除，或點選取消以取消。'))) {
+				ctx.statusElement.error(wgULS('对全保护页面的取消删除已取消。', '對全保護頁面的取消刪除已取消。'));
+				ctx.onUndeleteFailure(this);
+				return;
+			}
+
+			// KLUDGE:
+			token = mw.user.tokens.get('csrfToken');
+			pageTitle = ctx.pageName;
+		}
+
+		var query = {
+			'action': 'undelete',
+			'title': pageTitle,
+			'token': token,
+			'reason': ctx.editSummary
+		};
+		if (ctx.watchlistOption === 'watch') {
+			query.watch = 'true';
+		}
+
+		ctx.undeleteProcessApi = new Morebits.wiki.api(wgULS('取消删除…', '取消刪除…'), query, ctx.onUndeleteSuccess, ctx.statusElement, fnProcessUndeleteError);
+		ctx.undeleteProcessApi.setParent(this);
+		ctx.undeleteProcessApi.post();
+	};
+
+	// callback from undeleteProcessApi.post()
+	var fnProcessUndeleteError = function() {
+
+		var errorCode = ctx.undeleteProcessApi.getErrorCode();
+
+		// check for "Database query error"
+		if (errorCode === 'internal_api_error_DBQueryError' && ctx.retries++ < ctx.maxRetries) {
+			ctx.statusElement.info(wgULS('数据库查询错误，重试', '資料庫查詢錯誤，重試'));
+			--Morebits.wiki.numberOfActionsLeft;  // allow for normal completion if retry succeeds
+			ctx.undeleteProcessApi.post(); // give it another go!
+		} else if ((errorCode === 'badtoken' || errorCode === 'notoken') && ctx.retries++ < ctx.maxRetries) {
+			ctx.statusElement.error(wgULS('无效令牌，重试。', '無效權杖，重試。'));
+			--Morebits.wiki.numberOfActionsLeft;
+			ctx.undeleteProcessApi.query.token = fnGetToken.call(this);
+			ctx.undeleteProcessApi.post();
+
+		} else if (errorCode === 'cantundelete') {
+			ctx.statusElement.error(wgULS('不能取消删除页面，因没有版本供取消删除或已被取消删除', '不能取消刪除頁面，因沒有版本供取消刪除或已被取消刪除'));
+			if (ctx.onUndeleteFailure) {
+				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
+			}
+		// hard error, give up
+		} else {
+			ctx.statusElement.error(wgULS('不能取消删除页面：', '不能取消刪除頁面：') + ctx.undeleteProcessApi.getErrorText());
+			if (ctx.onUndeleteFailure) {
+				ctx.onUndeleteFailure.call(this, ctx.undeleteProcessApi);  // invoke callback
 			}
 		}
 	};
@@ -3340,7 +3566,7 @@ Morebits.wiki.flow.check = function(title, callbackOnFlow, callbackOnNonFlow, on
 	checkApi.post();
 }; // end Morebits.wiki.flow
 
-Morebits.wiki.flow.relevantUserName = function () {
+Morebits.wiki.flow.relevantUserName = function (allowBlock) {
 	// 处理Flow页面的问题
 	var name = mw.config.get('wgRelevantUserName');
 	if (name) {
@@ -3348,10 +3574,15 @@ Morebits.wiki.flow.relevantUserName = function () {
 	} else if (mw.config.get('wgPageContentModel') === 'flow-board') {
 		var title = $('a', '#contentSub').attr('title');
 		if (title && title.indexOf('User talk:') === 0) {
-			return title.substr(10);
+			return title.replace(/^User talk:([^/]+).*$/, '$1');
 		}
 		return null;
 
+	} else if (mw.config.get('wgCanonicalSpecialPageName') === 'Contributions') {
+		if ($('#contentSub').find('a[title^="Special:日志/block"]').length && allowBlock) {
+			var link = $('#contentSub').find('a[title^="Special:日志/block"]')[0].href;
+			return mw.util.getParamValue('page', link).replace('User:', '');
+		}
 	}
 	return null;
 
@@ -3819,10 +4050,12 @@ Morebits.status.prototype = {
 			if (type === 'error') {
 				// hack to force the page not to reload when an error is output - see also Morebits.status() above
 				Morebits.wiki.numberOfActionsLeft = 1000;
+
 				// call error callback
 				if (Morebits.status.errorEvent) {
 					Morebits.status.errorEvent();
 				}
+
 				// also log error messages in the browser console
 				console.error(this.textRaw + ': ' + status); // eslint-disable-line no-console
 			}
@@ -3832,7 +4065,7 @@ Morebits.status.prototype = {
 	generate: function() {
 		this.node = document.createElement('div');
 		this.node.appendChild(document.createElement('span')).appendChild(this.text);
-		this.node.appendChild(document.createElement('span')).appendChild(document.createTextNode(': '));
+		this.node.appendChild(document.createElement('span')).appendChild(document.createTextNode('：'));
 		this.target = this.node.appendChild(document.createElement('span'));
 		this.target.appendChild(document.createTextNode('')); // dummy node
 	},
@@ -3913,25 +4146,28 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 	var lastCheckbox = null;
 
 	function clickHandler(event) {
-		var cb = this;
+		var thisCb = this;
 		if (event.shiftKey && lastCheckbox !== null) {
 			var cbs = $(jQuerySelector, jQueryContext); // can't cache them, obviously, if we want to support resorting
 			var index = -1, lastIndex = -1, i;
 			for (i = 0; i < cbs.length; i++) {
-				if (cbs[i] === cb) {
-					index = i; if (lastIndex > -1) {
+				if (cbs[i] === thisCb) {
+					index = i;
+					if (lastIndex > -1) {
 						break;
 					}
 				}
 				if (cbs[i] === lastCheckbox) {
-					lastIndex = i; if (index > -1) {
+					lastIndex = i;
+					if (index > -1) {
 						break;
 					}
 				}
 			}
+
 			if (index > -1 && lastIndex > -1) {
 				// inspired by wikibits
-				var endState = cb.checked;
+				var endState = thisCb.checked;
 				var start, finish;
 				if (index < lastIndex) {
 					start = index + 1;
@@ -3940,12 +4176,13 @@ Morebits.checkboxShiftClickSupport = function (jQuerySelector, jQueryContext) {
 					start = lastIndex;
 					finish = index - 1;
 				}
+
 				for (i = start; i <= finish; i++) {
 					cbs[i].checked = endState;
 				}
 			}
 		}
-		lastCheckbox = cb;
+		lastCheckbox = thisCb;
 		return true;
 	}
 
@@ -4389,6 +4626,5 @@ if (typeof arguments === 'undefined') {  // typeof is here for a reason...
 	window.Status = Morebits.status;
 	window.QueryString = Morebits.queryString;
 }
-
 
 // </nowiki>
