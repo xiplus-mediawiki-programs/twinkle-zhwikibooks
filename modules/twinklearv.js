@@ -20,7 +20,7 @@ Twinkle.arv = function twinklearv() {
 		return;
 	}
 
-	var title = Morebits.isIPAddress( username ) ? wgULS('报告IP给管理员', '報告IP給管理員') : wgULS('报告用户给管理人员', '報告使用者給管理人員');
+	var title = mw.util.isIPAddress( username ) ? wgULS('报告IP给管理员', '報告IP給管理員') : wgULS('报告用户给管理人员', '報告使用者給管理人員');
 
 	Twinkle.addPortletLink( function(){ Twinkle.arv.callback(username); }, wgULS("告状", "告狀"), "tw-arv", title );
 };
@@ -156,7 +156,7 @@ Twinkle.arv.callback.changeCategory = function (e) {
 					{
 						label: wgULS('显而易见的纯破坏用户', '顯而易見的純破壞用戶'),
 						value: 'vandalonly',
-						disabled: Morebits.isIPAddress( root.uid.value )
+						disabled: mw.util.isIPAddress( root.uid.value )
 					},
 					{
 						label: wgULS('显而易见的spambot或失窃账户', '顯而易見的spambot或失竊帳戶'),
@@ -772,7 +772,7 @@ Twinkle.arv.processSock = function( params ) {
 				notify(socks[i], socks[i], onSuccess);
 			}
 		}
-		
+
 	}
 
 	// prepare the SPI report
