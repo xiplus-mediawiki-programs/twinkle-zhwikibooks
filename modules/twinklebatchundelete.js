@@ -93,9 +93,8 @@ Twinkle.batchundelete.callback = function twinklebatchundeleteCallback() {
 	wikipedia_api.post();
 };
 
-Twinkle.batchundelete.callback.evaluate = function( event ) {
-	Morebits.wiki.actionCompleted.notice = wgULS('状态', '狀態');
-	Morebits.wiki.actionCompleted.postfix = wgULS('反删除已完成', '反刪除已完成');
+Twinkle.batchundelete.callback.evaluate = function(event) {
+	Morebits.wiki.actionCompleted.notice = wgULS('反删除已完成', '反刪除已完成');
 
 	var pages = event.target.getChecked( 'pages' );
 	var reason = event.target.reason.value;
