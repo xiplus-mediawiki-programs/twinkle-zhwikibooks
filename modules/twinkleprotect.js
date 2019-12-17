@@ -1321,10 +1321,10 @@ Twinkle.protect.callbacks = {
 		if( params.tag === 'none' ) {
 			summary = wgULS('移除保护模板', '移除保護模板') + Twinkle.getPref('summaryAd');
 		} else {
-			if( params.noinclude ) {
-				text = "<noinclude>{{" + tag + "}}</noinclude>" + text;
-			} else if( Morebits.wiki.isPageRedirect() ) {
-				text = text + "\n{{" + tag + "}}";
+			if (params.noinclude) {
+				text = '<noinclude>{{' + tag + '}}</noinclude>' + text;
+			} else if (/^\s*#(redirect|重定向|重新導向)/i.test(text)) { // redirect page
+				text = text + '\n{{' + tag + '}}';
 			} else {
 				text = "{{" + tag + "}}\n" + text;
 			}
