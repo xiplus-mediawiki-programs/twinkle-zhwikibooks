@@ -1,0 +1,12 @@
+{
+  "title": "Twinkle",
+  "name": "twinkle-zhwikibooks",
+  "private": true,
+  "repository": "Xi-Plus/twinkle-zhwikibooks",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "5.16.0"
+  }
+}
