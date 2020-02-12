@@ -22,12 +22,10 @@
 
 Twinkle.config = {};
 
-Twinkle.config.commonEnums = wgULS({
-	watchlist: { yes: '添加到监视列表', no: '不添加到监视列表', 'default': '遵守站点设置' },
-	talkPageMode: { window: '在窗口中，替换成其它用户对话页', tab: '在新标签页中', blank: '在全新的窗口中' }
+Twinkle.config.watchlistEnums = wgULS({
+	yes: '添加到监视列表', no: '不添加到监视列表', 'default': '遵守站点设置'
 }, {
-	watchlist: { yes: '加入到監視清單', no: '不加入到監視清單', 'default': '遵守站點設定' },
-	talkPageMode: { window: '在當前分頁，替換成其它用戶對話頁', tab: '在新分頁中', blank: '在新視窗中' }
+	yes: '加入到監視清單', no: '不加入到監視清單', 'default': '遵守站點設定'
 });
 
 Twinkle.config.commonSets = {
@@ -171,7 +169,10 @@ Twinkle.config.sections = [
 				name: 'userTalkPageMode',
 				label: wgULS('当要打开用户对话页时，', '當要開啟用戶對話頁時，'),
 				type: 'enum',
-				enumValues: Twinkle.config.commonEnums.talkPageMode
+				enumValues: wgULS(
+					{ window: '在窗口中，替换成其它用户对话页', tab: '在新标签页中', blank: '在全新的窗口中' },
+					{ window: '在當前分頁，替換成其它用戶對話頁', tab: '在新分頁中', blank: '在新視窗中' }
+				)
 			},
 
 			// TwinkleConfig.dialogLargeFont (boolean)
@@ -628,7 +629,7 @@ Twinkle.config.sections = [
 				name: 'xfdWatchPage',
 				label: wgULS('添加提名的页面到监视列表', '加入提名的頁面到監視清單'),
 				type: 'enum',
-				enumValues: Twinkle.config.commonEnums.watchlist
+				enumValues: Twinkle.config.watchlistEnums
 			},
 
 			// TwinkleConfig.xfdWatchDiscussion (string)
@@ -640,7 +641,7 @@ Twinkle.config.sections = [
 				label: wgULS('添加存废讨论页到监视列表', '加入存廢討論頁到監視清單'),
 				helptip: wgULS('当日的页面。', '當日的頁面。'),
 				type: 'enum',
-				enumValues: Twinkle.config.commonEnums.watchlist
+				enumValues: Twinkle.config.watchlistEnums
 			},
 
 			// TwinkleConfig.xfdWatchUser (string)
@@ -650,7 +651,7 @@ Twinkle.config.sections = [
 				name: 'xfdWatchUser',
 				label: wgULS('添加创建者对话页到监视列表（在通知时）', '加入建立者對話頁到監視清單（在通知時）'),
 				type: 'enum',
-				enumValues: Twinkle.config.commonEnums.watchlist
+				enumValues: Twinkle.config.watchlistEnums
 			},
 
 			// TwinkleConfig.markXfdPagesAsPatrolled (boolean)
