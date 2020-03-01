@@ -15,7 +15,7 @@
 
 Twinkle.batchdelete = function twinklebatchdelete() {
 	if (
-		Morebits.userIsInGroup('sysop') && (
+		Morebits.userIsSysop && (
 			(mw.config.get('wgCurRevisionId') && mw.config.get('wgNamespaceNumber') > 0) ||
 			mw.config.get('wgCanonicalSpecialPageName') === 'Prefixindex'
 		)

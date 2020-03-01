@@ -67,6 +67,8 @@ window.Morebits = Morebits;  // allow global access
 Morebits.userIsInGroup = function (group) {
 	return mw.config.get('wgUserGroups').indexOf(group) !== -1;
 };
+// Used a lot
+Morebits.userIsSysop = Morebits.userIsInGroup('sysop');
 
 
 /**
@@ -227,7 +229,7 @@ Morebits.quickForm.element.prototype.compute = function QuickFormElementCompute(
 	var childContainder = null;
 	var label;
 	var id = (in_id ? in_id + '_' : '') + 'node_' + this.id;
-	if (data.adminonly && !Morebits.userIsInGroup('sysop')) {
+	if (data.adminonly && !Morebits.userIsSysop) {
 		// hell hack alpha
 		data.type = 'hidden';
 	}
@@ -2155,7 +2157,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (typeof ctx.pageSection === 'number') {
 			ctx.loadQuery.rvsection = ctx.pageSection;
 		}
-		if (Morebits.userIsInGroup('sysop')) {
+		if (Morebits.userIsSysop) {
 			ctx.loadQuery.inprop = 'protection';
 		}
 
@@ -2393,7 +2395,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		if (ctx.followRedirect) {
 			query.redirects = '';  // follow all redirects
 		}
-		if (Morebits.userIsInGroup('sysop')) {
+		if (Morebits.userIsSysop) {
 			query.inprop = 'protection';
 		}
 
@@ -2408,7 +2410,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onDeleteFailure = onFailure || emptyFunction;
 
 		// if a non-admin tries to do this, don't bother
-		if (!Morebits.userIsInGroup('sysop')) {
+		if (!Morebits.userIsSysop) {
 			ctx.statusElement.error('不能删除页面：只有管理员可进行该操作');
 			ctx.onDeleteFailure(this);
 			return;
@@ -2449,7 +2451,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onUndeleteFailure = onFailure || emptyFunction;
 
 		// if a non-admin tries to do this, don't bother
-		if (!Morebits.userIsInGroup('sysop')) {
+		if (!Morebits.userIsSysop) {
 			ctx.statusElement.error(wgULS('不能取消删除页面：只有管理员可进行该操作', '不能取消刪除頁面：只有管理員可進行該操作'));
 			ctx.onUndeleteFailure(this);
 			return;
@@ -2487,7 +2489,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onProtectFailure = onFailure || emptyFunction;
 
 		// if a non-admin tries to do this, don't bother
-		if (!Morebits.userIsInGroup('sysop')) {
+		if (!Morebits.userIsSysop) {
 			ctx.statusElement.error('不能保护页面：只有管理员可进行该操作');
 			ctx.onProtectFailure(this);
 			return;
@@ -2530,7 +2532,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		ctx.onStabilizeFailure = onFailure || emptyFunction;
 
 		// if a non-admin tries to do this, don't bother
-		if (!Morebits.userIsInGroup('sysop')) {
+		if (!Morebits.userIsSysop) {
 			ctx.statusElement.error('不能应用FlaggedRevs设定：只有管理员能这么做');
 			ctx.onStabilizeFailure(this);
 			return;
@@ -2584,7 +2586,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		// do we need to fetch the edit protection expiry?
-		if (Morebits.userIsInGroup('sysop') && !ctx.suppressProtectWarning) {
+		if (Morebits.userIsSysop && !ctx.suppressProtectWarning) {
 			// poor man's normalisation
 			if (Morebits.string.toUpperCaseFirstChar(mw.config.get('wgPageName')).replace(/ /g, '_').trim() !==
 				Morebits.string.toUpperCaseFirstChar(ctx.pageName).replace(/ /g, '_').trim()) {
@@ -2621,7 +2623,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		// extract protection info, to alert admins when they are about to edit a protected page
-		if (Morebits.userIsInGroup('sysop')) {
+		if (Morebits.userIsSysop) {
 			var editprot = $(xml).find('pr[type="edit"]');
 			if (editprot.length > 0 && editprot.attr('level') === 'sysop') {
 				ctx.fullyProtected = editprot.attr('expiry');
@@ -2910,7 +2912,7 @@ Morebits.wiki.page = function(pageName, currentAction) {
 		}
 
 		// extract protection info
-		if (Morebits.userIsInGroup('sysop')) {
+		if (Morebits.userIsSysop) {
 			var editprot = $(xml).find('pr[type="edit"]');
 			if (editprot.length > 0 && editprot.attr('level') === 'sysop' && !ctx.suppressProtectWarning &&
 				!confirm(wgULS('您即将移动全保护页面“', '您即將移動全保護頁面「') + ctx.pageName + wgULS('”', '」') +
