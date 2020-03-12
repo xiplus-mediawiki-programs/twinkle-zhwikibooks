@@ -54,6 +54,9 @@ Twinkle.defaultConfig = {
 	blockSummaryAd: ' ([[User:Xiplus/Twinkle|TW]])',
 	userTalkPageMode: 'tab',
 	dialogLargeFont: false,
+	disabledModules: [],
+	disabledSysopModules: [],
+
 	// Block
 	blankTalkpageOnIndefBlock: false,
 	customBlockReasonList: [],
@@ -426,35 +429,22 @@ Twinkle.load = function () {
 	// Set custom Api-User-Agent header, for server-side logging purposes
 	Morebits.wiki.api.setApiUserAgent('Twinkle~zh~/2.0 (' + mw.config.get('wgDBname') + ')');
 
-	// Load the modules in the order that the tabs should appear
-	// User/user talk-related
-	// Twinkle.arv();
-	// Twinkle.warn();
-	if (Morebits.userIsSysop) {
-		Twinkle.block();
-	}
-	// Twinkle.shared();
-	// Twinkle.talkback();
-	// Deletion
-	// Twinkle.speedy();
-	// Twinkle.copyvio();
-	Twinkle.xfd();
-	// Twinkle.image();
-	// Maintenance
-	// Twinkle.protect();
-	// Twinkle.tag();
-	// Misc. ones last
-	Twinkle.diff();
-	// Twinkle.unlink();
-	Twinkle.config.init();
-	Twinkle.fluff();
-	/* if (Morebits.userIsSysop) {
-		Twinkle.batchdelete();
-		Twinkle.batchundelete();
-	} */
-	/* if (Twinkle.getPref('XfdClose') !== 'hide') {
-		Twinkle.close();
-	} */
+	// Load all the modules in the order that the tabs should appear
+	var twinkleModules = [
+		// Deletion
+		'xfd',
+		// Misc. ones last
+		'diff', 'fluff'
+	];
+	// Don't load modules users have disabled
+	var disabledModules = Twinkle.getPref('disabledModules').concat(Twinkle.getPref('disabledSysopModules'));
+	twinkleModules.filter(function(mod) {
+		return disabledModules.indexOf(mod) === -1;
+	}).forEach(function(module) {
+		Twinkle[module]();
+	});
+
+	Twinkle.config.init(); // Can't turn off
 
 	Twinkle.addPortletLink(mw.util.wikiScript('index') + '?title=' + Twinkle.getPref('configPage'), wgULS('设置', '設定'), 'tw-config', wgULS('设置Twinkle参数', '設定Twinkle參數'));
 

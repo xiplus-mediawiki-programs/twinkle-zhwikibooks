@@ -180,6 +180,15 @@ Twinkle.config.sections = [
 				name: 'dialogLargeFont',
 				label: wgULS('在Twinkle对话框中使用大号字体', '在Twinkle對話方塊中使用大號字型'),
 				type: 'boolean'
+			},
+
+			// Twinkle.config.disabledModules (array)
+			{
+				name: 'disabledModules',
+				label: wgULS('关闭指定的Twinkle模块', '關閉指定的Twinkle模組'),
+				helptip: wgULS('您在此选择的功能将无法使用，取消选择以重新激活功能。', '您在此選擇的功能將無法使用，取消選擇以重新啟用功能。'),
+				type: 'set',
+				setValues: { xfd: wgULS('提删', '提刪'), diff: wgULS('差异', '差異'), 'fluff': '回退' }
 			}
 		]
 	},
