@@ -644,8 +644,9 @@ Twinkle.xfd.callback.evaluate = function(e) {
 			Morebits.wiki.actionCompleted.redirect = logpage;
 			Morebits.wiki.actionCompleted.notice = wgULS('提名完成，重定向到讨论页', '提名完成，重定向到討論頁');
 
-			// Tagging file
-			wikipedia_page = new Morebits.wiki.page(mw.config.get('wgPageName'), wgULS('添加存废讨论模板到页面', '加入存廢討論模板到頁面'));
+			// Tagging page
+			var isScribunto = mw.config.get('wgPageContentModel') === 'Scribunto';
+			wikipedia_page = isScribunto ? new Morebits.wiki.page(mw.config.get('wgPageName') + '/doc', wgULS('添加存废讨论模板到模块文档页', '加入存廢討論模板到模組文件頁')) : new Morebits.wiki.page(mw.config.get('wgPageName'), wgULS('添加存废讨论模板到页面', '加入存廢討論模板到頁面'));
 			wikipedia_page.setFollowRedirect(false);
 			wikipedia_page.setCallbackParameters(params);
 			wikipedia_page.load(Twinkle.xfd.callbacks.afd.tryTagging);
