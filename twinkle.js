@@ -249,42 +249,41 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	if (skin !== 'vector' || (navigation !== 'left-navigation' && navigation !== 'right-navigation')) {
 		type = null; // menu supported only in vector's #left-navigation & #right-navigation
 	}
-	var outerDivClass, innerDivClass;
+	var outerNavClass, innerDivClass;
 	switch (skin) {
 		case 'vector':
 			// XXX: portal doesn't work
 			if (navigation !== 'portal' && navigation !== 'left-navigation' && navigation !== 'right-navigation') {
 				navigation = 'mw-panel';
 			}
-			outerDivClass = 'vector-menu vector-menu-' + (navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'dropdown' : 'tabs');
+			outerNavClass = 'mw-portlet vector-menu vector-menu-' + (navigation === 'mw-panel' ? 'portal' : type === 'menu' ? 'dropdown' : 'tabs');
 			innerDivClass = 'vector-menu-content';
 			break;
 		case 'modern':
 			if (navigation !== 'mw_portlets' && navigation !== 'mw_contentwrapper') {
 				navigation = 'mw_portlets';
 			}
-			outerDivClass = 'portlet';
+			outerNavClass = 'portlet';
 			break;
 		case 'timeless':
-			outerDivClass = 'mw-portlet';
+			outerNavClass = 'mw-portlet';
 			innerDivClass = 'mw-portlet-body';
 			break;
 		default:
 			navigation = 'column-one';
-			outerDivClass = 'portlet';
+			outerNavClass = 'portlet';
 			break;
 	}
 
 	// Build the DOM elements.
-	var outerDiv = document.createElement('nav');
-	outerDiv.setAttribute('aria-labelledby', id + '-label');
-	// Vector getting vector-menu-empty FIXME TODO
-	outerDiv.className = outerDivClass + ' emptyPortlet';
-	outerDiv.id = id;
+	var outerNav = document.createElement('nav');
+	outerNav.setAttribute('aria-labelledby', id + '-label');
+	outerNav.className = outerNavClass + ' emptyPortlet';
+	outerNav.id = id;
 	if (nextnode && nextnode.parentNode === root) {
-		root.insertBefore(outerDiv, nextnode);
+		root.insertBefore(outerNav, nextnode);
 	} else {
-		root.appendChild(outerDiv);
+		root.appendChild(outerNav);
 	}
 
 	var h3 = document.createElement('h3');
@@ -292,15 +291,19 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 	var ul = document.createElement('ul');
 
 	if (skin === 'vector') {
+		ul.className = 'vector-menu-content-list';
+
 		// add invisible checkbox to keep menu open when clicked
 		// similar to the p-cactions ("More") menu
-		if (outerDivClass.indexOf('vector-menu-dropdown') !== -1) {
+		if (outerNavClass.indexOf('vector-menu-dropdown') !== -1) {
 			var chkbox = document.createElement('input');
-			chkbox.className = 'vectorMenuCheckbox vector-menu-checkbox'; // remove vectorMenuCheckbox after 1.35-wmf.37 goes live
+			chkbox.className = 'vector-menu-checkbox';
 			chkbox.setAttribute('type', 'checkbox');
 			chkbox.setAttribute('aria-labelledby', id + '-label');
-			outerDiv.appendChild(chkbox);
+			outerNav.appendChild(chkbox);
 
+			// Vector gets its title in a span; all others except
+			// timeless have no title, and it has no span
 			var span = document.createElement('span');
 			span.appendChild(document.createTextNode(text));
 			h3.appendChild(span);
@@ -314,25 +317,24 @@ Twinkle.addPortlet = function(navigation, id, text, type, nextnodeid) {
 
 			h3.appendChild(a);
 		}
-
-		outerDiv.appendChild(h3);
-		ul.className = 'menu vector-menu-content-list';  // remove menu after 1.35-wmf.37 goes live
 	} else {
+		// Basically just Timeless
 		h3.appendChild(document.createTextNode(text));
-		outerDiv.appendChild(h3);
 	}
+
+	outerNav.appendChild(h3);
 
 	if (innerDivClass) {
 		var innerDiv = document.createElement('div');
 		innerDiv.className = innerDivClass;
 		innerDiv.appendChild(ul);
-		outerDiv.appendChild(innerDiv);
+		outerNav.appendChild(innerDiv);
 	} else {
-		outerDiv.appendChild(ul);
+		outerNav.appendChild(ul);
 	}
 
 
-	return outerDiv;
+	return outerNav;
 
 };
 
